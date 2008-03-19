@@ -1,5 +1,3 @@
-#          -*- cperl -*-
-
 =head1 NAME
 
 jspell - jspell affix file format

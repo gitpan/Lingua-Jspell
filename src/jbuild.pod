@@ -1,8 +1,6 @@
-#          -*- cperl -*-
-
 =head1 NAME
 
-jbuild - a....
+jbuild - Builds Jspell dictionaries
 
 =head1 SYNOPSIS
 

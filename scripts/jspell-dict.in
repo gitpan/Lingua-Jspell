@@ -38,5 +38,51 @@ else {
   print " jspell-dict [--list-dics] | [--dic-dir] | [--installed=<dict>]\n";
 }
 
+=head1 NAME
 
+jspell-dict - Command line tool to manage Jspell dictionaries
+
+=head1 SYNOPSIS
+
+  jspell-dict --list-dics
+
+  jspell-dict --dir
+
+  jspell-dict --installed
+
+=head1 DESCRIPTION
+
+This is a simple interface to manage Jspell dictionaries. Main flags are used to:
+
+=over 4
+
+=item C<--list-dics>
+
+List installed dictionaries
+
+=item C<--dic-dir>
+
+Shows the directory where dictionaries should be installed
+
+=item C<--installed=E<lt>dictE<gt>>
+
+Returns a boolean value (for the operating system) stating if some
+dictionary is installed.
+
+=back
+
+
+=head1 SEE ALSO
+
+jspell(1), jbuild(1), Lingua::Jspell(3) and perl(1)
+
+=head1 AUTHOR
+
+Alberto Manuel Brandão Simões, E<lt>ambs@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2007-2008 by Projecto Natura
+
+=cut
 

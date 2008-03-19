@@ -1,6 +1,11 @@
 Revision history for Lingua-Jspell
 
+1.50_02 March 19, 2008
+	- Added documentation to jspell-dict script
+	- Added installation rules for man pages
+	- Added the Lingua-Jspell-DictManager module
+
 1.50_01	March 19, 2008
-        - First version as a Perl Module.
-		- Has some building problems that should be fixed before 1.50.
+	- First version as a Perl Module.
+	- Has some building problems that should be fixed before 1.50.
 

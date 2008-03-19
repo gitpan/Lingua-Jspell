@@ -101,6 +101,11 @@ open TS, '>_jdummy_' or die ("Cant create timestamp [_jdummy_].\n");
 print TS scalar(localtime);
 close TS;
 
+# put agrep.1 file on the right place for installation
+copy("agrep/agrep.1","blib/man1/agrep.1");
+
+
+# #-------------------------------------------------------------------
 sub interpolate {
 	my ($from, $to, %config) = @_;
 	

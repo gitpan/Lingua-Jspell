@@ -1,8 +1,6 @@
-# -*- cperl -*-
-
 =head1 NAME
 
-jspell - a morphological analyzer
+jspell - Command line interface to Jspell morphological analyzer
 
 =head1 SYNOPSIS
 

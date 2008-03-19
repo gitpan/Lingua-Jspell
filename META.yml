@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:                Lingua-Jspell
-version:             1.50_01
-abstract:            Perl interface to the jspell morphological analyser.
+version:             1.50_02
+abstract:            Perl interface to the Jspell morphological analyser.
 license:             ~
 author:              
     - Projecto Natura

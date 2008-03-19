@@ -17,11 +17,11 @@ use IPC::Open3;
 
 =head1 NAME
 
-Lingua::Jspell - Perl interface to the jspell morphological analyser.
+Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.50_01';
+our $VERSION = '1.50_02';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -660,6 +660,7 @@ sub hash2str {
 =head1 AUTHOR
 
 Jose Joao Almeida, C<< <jj@di.uminho.pt> >>
+Alberto Simões, C<< <ambs@di.uminho.pt> >>
 
 =head1 BUGS
 
@@ -671,10 +672,9 @@ progress on your bug as I make changes.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Jose Joao Almeida, all rights reserved.
+Copyright 2007-2008 Projecto Natura
 
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This program is free software; licensed undef GPL.
 
 =cut
 
@@ -717,6 +717,7 @@ sub _irr_file {
   }
   return $irr_file;
 }
+
 
 
 1; # End of Lingua::Jspell

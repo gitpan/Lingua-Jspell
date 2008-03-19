@@ -2,7 +2,8 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-unlink "_jdummy_";
+# NOT SURE IF I WANT THIS OR NOT
+# unlink "_jdummy_";
 
 WriteMakefile(
     NAME                => 'Lingua::Jspell',
@@ -17,6 +18,12 @@ WriteMakefile(
         'Test::More' => 0,
     },
 	EXE_FILES           => ['src/jspell','src/jbuild','agrep/agrep', 'scripts/jspell-dict'],
+	MAN1PODS            => {
+		'src/jspell.pod'      => 'blib/man1/jspell.1',
+		'src/jspellaff.pod'   => 'blib/man1/jspellaff.1',
+		'src/jbuild.pod'      => 'blib/man1/jbuild.1',
+		'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
+	},
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Lingua-Jspell-*' },
 );

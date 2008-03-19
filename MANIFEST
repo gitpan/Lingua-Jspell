@@ -4,6 +4,7 @@ Makefile.PL
 README
 
 lib/Lingua/Jspell.pm
+lib/Lingua/Jspell/DictManager.pm
 
 t/00.load.t
 t/pod-coverage.t
@@ -14,8 +15,8 @@ scripts/installdic.pl
 scripts/jspell-dict.in
 
 agrep/agrep.1
-agrep/agrep.algorithms
-agrep/agrep.chronicle
+agrep/agrep-algorithms.txt
+agrep/agrep-changelog.txt
 agrep/agrep.h
 agrep/asearch.c
 agrep/asearch1.c
@@ -23,7 +24,7 @@ agrep/bitap.c
 agrep/checkfile.c
 agrep/checkfile.h
 agrep/compat.c
-agrep/contribution.list
+agrep/contribution-list.txt
 agrep/COPYRIGHT
 agrep/follow.c
 agrep/main.c
@@ -52,7 +53,7 @@ src/jmain.c
 src/jsconfig.in
 src/jslib.c
 src/jslib.h
-src/jspell-aff.pod
+src/jspellaff.pod
 src/jspell.c
 src/jspell.h
 src/jspell.pod
