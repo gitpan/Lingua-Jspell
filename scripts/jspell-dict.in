@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use File::Basename;
+
+my $libdir = "[% PREFIX %]/lib/jspell";
+
+my ($exists, $listall, $dicdir);
+my $result = GetOptions("list-dics" => \$listall,
+			"dic-dir" => \$dicdir,
+			"installed=s" => \$exists);
+
+my @dics = map { basename($_) } <$libdir/*hash>;
+
+if ($dicdir) {
+  print "$libdir\n";
+}
+
+elsif ($listall) {
+  if (@dics) {
+    print(map "$_\n", @dics);
+  }
+}
+
+elsif ($exists) {
+  if (grep {$_ eq "$exists.hash"} @dics) {
+    print "yes\n";
+  } else {
+    print "no\n";
+    exit(1);
+  }
+}
+
+else {
+  print " jspell-dict [--list-dics] | [--dic-dir] | [--installed=<dict>]\n";
+}
+
+
+

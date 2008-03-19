@@ -1,0 +1,17 @@
+--- #YAML:1.0
+name:                Lingua-Jspell
+version:             1.50_01
+abstract:            Perl interface to the jspell morphological analyser.
+license:             ~
+author:              
+    - Projecto Natura
+generated_by:        ExtUtils::MakeMaker version 6.43_01
+distribution_type:   module
+requires:     
+    Config::AutoConf:              0.05
+    ExtUtils::CBuilder:            0.22
+    File::Which:                   0
+    Test::More:                    0
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

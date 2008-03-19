@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+ Lingua-Jspell
+-------------------------------------------------------------------------------
+
+Lingua-Jspell is a morphological analyser. Its first version were
+distributed based on a C package with autoconf/automake/libtool
+configuration. Given that main usage of Jspell is done through its Perl
+interface, Jspell is now made available as a Perl module, that includes
+the original C code unmodified.
+
+For the installation you need a C compiler and YACC or Bison. The
+building tools will try to detect them but it is not guaranteed that
+they will be detected correctly.
+
+Please refer to the documentation or http://natura.di.uminho.pt/ for
+further details on Jspell usage and Jspell dictionaries.
+
+ INSTALLATION
+-------------------------------------------------------------------------------
+
+To install this module, run the following commands:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+Please submit build problems as RT tickets using 
+bug-lingua-jspell@rt.cpan.org
+
+ COPYRIGHT AND LICENCE
+-------------------------------------------------------------------------------
+
+Copyright (C) 2008 Projecto Natura
+
+-------------------------------------------------------------------------------
