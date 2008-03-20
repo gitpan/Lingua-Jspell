@@ -17,7 +17,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw();
 
-our $VERSION = '0.01';
+our $VERSION = '0.01_1';
 
 # Preloaded methods go here.
 
@@ -152,7 +152,7 @@ sub extra_words {
 	for $fea ($jdic->fea($word)) {
 	  if ($fea->{rad} eq $word) {
 	    for $fea1 (fea($r)) {
-	      if (same_cat($fea1->{CAT},$fea->{CAT})) {
+	      if (_same_cat($fea1->{CAT},$fea->{CAT})) {
 		$from{$r} = {word=>$word, orig=>$fea1, dest=>$fea};
 	      }
 	    }
@@ -177,7 +177,7 @@ sub extra_words {
   }
 }
 
-sub same_cat {
+sub _same_cat {
   my ($a,$b) = @_;
   if (defined($a) && defined($b)) {
     return ($a eq $b);
@@ -191,7 +191,8 @@ sub same_cat {
 # { word => 'word', flags => 'zbr', CAT => 'np', G=>'f' }
 sub add_words {
 	my $dict = shift;
-	$dict->add_full_line(map {
+
+	$dict->_same_catadd_full_line(map {
 				my $word = $_->{word};
 				my $flags = $_->{flags};
 				delete($_->{word});
@@ -202,7 +203,7 @@ sub add_words {
 				 } @_);
 }
 
-sub add_full_line {
+sub _add_full_line {
 	my $dict = shift;
 	my @p = map {"$_\n"} @_;
 	my @v;
@@ -249,9 +250,9 @@ sub add_flag {
 		 @fs{@$f}=1; 
 		 if ($words{$w}) {
 			@fs{split //, $flag}=1;;
-			print data2line($w,$a,join("",keys %fs));
+			print _data2line($w,$a,join("",keys %fs));
 		 }
-		 print data2line($w,$a,$f);
+		 print _data2line($w,$a,$f);
 		
 				});
 
@@ -268,13 +269,11 @@ sub add_flag {
 	#print "$a/$b/$c/$d\n";
 #}
 
-sub data2line {
+sub _data2line {
   my ($word,$atts,$flags) = @_;
   return "$word/".join(",",map { "$_=$atts->{$_}" } keys %$atts)."/".join("",grep {/./} @$flags)."/";
 }
 
-1;
-__END__
 
 =head1 NAME
 
@@ -345,14 +344,16 @@ Adds the flags in the first argument to all words passed.
 
 =head1 AUTHOR
 
- Alberto Simoes, albie@alfarrabio.di.uminho.pt
+ Alberto Simoes, E<lt>albie@alfarrabio.di.uminho.ptE<gt>
 
- J.Joao Almeida jj@di.uminho.pt
+ J.Joao Almeida, E<lt>jj@di.uminho.ptE<gt>
 
 =head1 SEE ALSO
 
  Lingua::Jspell(3), jspell(1)
 
-=head1 BUGS
-
 =cut
+
+1;
+
+__END__

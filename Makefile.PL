@@ -32,6 +32,7 @@ package MY; # so that "SUPER" works right
 
 our @agrep;
 our @jspell;
+our @scripts;
 
 BEGIN {
 	## Construct dependencies lists automagically
@@ -40,8 +41,15 @@ BEGIN {
 		chomp;
 		push @agrep, $_ if /^agrep.*[ch]$/;
 		push @jspell, $_ if /^src/;
+		push @scripts, $_ if /^scripts.*in$/;
 	}
 	close M;
+}
+
+sub install {
+    my $inherited = shift->SUPER::install(@_);
+	$inherited =~ s!install\s*::\s*all!install :: all installdic!; 
+	$inherited
 }
 
 sub top_targets {
@@ -52,10 +60,13 @@ sub top_targets {
 
 sub postamble {
     return <<"MAKE_FRAG";
+installdic:
+	\$(PERL) scripts/installdic.pl
+
 jspell: _jdummy_
 	\$(NOECHO) \$(NOOP)
 	
-_jdummy_: @agrep @jspell scripts/build.pl
+_jdummy_: @scripts @agrep @jspell scripts/build.pl
 	\$(PERL) scripts/build.pl
 
 MAKE_FRAG

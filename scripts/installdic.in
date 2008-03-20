@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+use File::Copy;
+use File::Spec::Functions;
+use File::Path;
+use warnings;
+use strict;
+
+eval {
+	require LWP::Simple
+};
+if ($@) {
+	print STDERR "LWP::Simple is not available on your system.\n";
+	print STDERR "I'll not try to install any dictionary now.\n";
+	exit;
+}
+LWP::Simple->import();
+
+eval {
+	require Archive::Any
+};
+if ($@) {
+	print STDERR "Archive::Any is not available on your system.\n";
+	print STDERR "I'll not try to install any dictionary now.\n";
+	exit;	
+}
+Archive::Any->import();
+
+my $dicurl = 'http://natura.di.uminho.pt/download/sources/Dictionaries/jspell/jspell.pt-bin-latest.tar.gz';
+if (is_success(getstore($dicurl, "dic.tar.gz"))) {
+	my $archive = Archive::Any->new("dic.tar.gz");
+	
+	my ($dir) = $archive->files;
+	$archive->extract();	
+	
+	my $destpath = catfile("[% PREFIX %]","lib","jspell");
+	for (qw~port.hash port.meta port.irr~) {
+		my ($from, $to) = (catfile($dir,$_), catfile($destpath,$_));
+		print "Installing [$from] as [$to]\n";
+		copy(catfile($dir,$_),catfile($destpath,$_));
+	}
+	unlink "dic.tar.gz";
+	rmtree($dir,1,1);
+	
+} else {
+	print STDERR "I can't access the dictionary server this time.\n";
+	print STDERR "You will need to install dictionaries manually.\n";
+}
+

@@ -5,8 +5,9 @@ use warnings;
 
 use Getopt::Long;
 use File::Basename;
+use File::Spec::Functions;
 
-my $libdir = "[% PREFIX %]/lib/jspell";
+my $libdir = catfile("[% PREFIX %]","lib","jspell");
 
 my ($exists, $listall, $dicdir);
 my $result = GetOptions("list-dics" => \$listall,

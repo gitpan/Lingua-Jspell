@@ -21,7 +21,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.50_02';
+our $VERSION = '1.50_03';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -689,7 +689,7 @@ sub _meta_file {
   return $dic_file;
 }
 
-sub _mode{
+sub _mode {
   my $m = shift;
   my $r="";
   if ($m->{nm}) {

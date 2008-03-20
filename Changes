@@ -1,5 +1,9 @@
 Revision history for Lingua-Jspell
 
+1.50_03 March   , 2008
+	- Corrected t/pod-coverage.t test to work with perl 5.10.0.
+	- Added script to install Portuguese dictionary dinamically.
+
 1.50_02 March 19, 2008
 	- Added documentation to jspell-dict script
 	- Added installation rules for man pages

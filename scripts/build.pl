@@ -41,7 +41,9 @@ if (not Config::AutoConf->check_lib("ncurses", "tgoto")) {
 	print " [found]\n"
 }
 
-
+interpolate('src/jsconfig.in','src/jsconfig.h',%c_config);
+interpolate('scripts/jspell-dict.in','scripts/jspell-dict',%c_config);
+interpolate('scripts/installdic.in','scripts/installdic.pl',%c_config);
 
 # prepare a C compiler
 my $cc = ExtUtils::CBuilder->new(quiet => 1);
@@ -71,8 +73,6 @@ print " - parse.y -> y.tab.c\n";
 my $cmd = "cd src; $yacc parse.y";
 print `$cmd`;
 
-interpolate('src/jsconfig.in','src/jsconfig.h',%c_config);
-interpolate('scripts/jspell-dict.in','scripts/jspell-dict',%c_config);
 
 my @jspell_source = qw~correct.c    good.c      jmain.c     makedent.c  tgood.c
                        defmt.c      hash.c      jslib.c     tree.c
@@ -109,6 +109,7 @@ copy("agrep/agrep.1","blib/man1/agrep.1");
 sub interpolate {
 	my ($from, $to, %config) = @_;
 	
+	print "Generating [$to] from template [$from].\n";
 	open FROM, $from or die "Cannot open file [$from] for reading.\n";
 	open TO, ">", $to or die "Cannot open file [$to] for writing.\n";
 	while (<FROM>) {
