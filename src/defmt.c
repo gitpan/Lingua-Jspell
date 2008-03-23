@@ -107,9 +107,9 @@ char *macro(char *strg) {
 	    def[i3] = '\0';
 	    /* printf("DEB def=%s", def); */
 	    if ((d = lookup(strtosichar(def, 0), 0))) {
-            if (i2+strlen(d->class) < MAXSOLLEN)
-               strcpy(aux[c]+i2, d->class);
-            i2 += strlen(d->class);
+            if (i2+strlen(d->jclass) < MAXSOLLEN)
+               strcpy(aux[c]+i2, d->jclass);
+            i2 += strlen(d->jclass);
          }
          else fprintf(stderr, DEFMT_C_MACRO_NOT_FOUND, def);
       }
@@ -606,25 +606,25 @@ void get_info(struct success hit) {
     strcpy(root, hit.dictent->word);
     treat_caps(root, captype(hit.dictent->flagfield));
 
-    root_class = hit.dictent->class;
+    root_class = hit.dictent->jclass;
     
     i = 0;
     pre_class[0] = suf_class[0] = suf2_class[0] = '\0';   /* null string */
     if (hit.prefix) {
-	ichartostr(pre_class, (hit.prefix)->class, (hit.prefix)->classl+1, 1);
+	ichartostr(pre_class, (hit.prefix)->jclass, (hit.prefix)->classl+1, 1);
 	used_flags[i++] = BITTOCHAR(hit.prefix->flagbit);
     }
     if (hit.suffix) {
-	ichartostr(suf_class, (hit.suffix)->class, (hit.suffix)->classl+1, 1);
+	ichartostr(suf_class, (hit.suffix)->jclass, (hit.suffix)->classl+1, 1);
 	used_flags[i++] = BITTOCHAR(hit.suffix->flagbit);
     }
     if (hit.suffix2) {
-	ichartostr(suf2_class, (hit.suffix2)->class, (hit.suffix2)->classl+1, 1);
+	ichartostr(suf2_class, (hit.suffix2)->jclass, (hit.suffix2)->classl+1, 1);
 	used_flags[i++] = BITTOCHAR(hit.suffix2->flagbit);
     }
     used_flags[i] = '\0';
     
-    if (hit.dictent->class[0] == '$') {  
+    if (hit.dictent->jclass[0] == '$') {  
 	/* $ means "forced" derivation */
 	/* class format: $root word$root word class$word class */
 	strcpy(suf2_class, suf_class);
@@ -1067,11 +1067,11 @@ char *word_f_id(ID_TYPE id) {
 
 char *class_f_id(ID_TYPE id) {
     struct dent *pd;
-    static char class[MAXCLASS];
+    static char jclass[MAXCLASS];
 
     pd = hashtbl + id;
-    strcpy(class, macro(pd->class));
-    return class;
+    strcpy(jclass, macro(pd->jclass));
+    return jclass;
 }
 
 #define MAXFLAGS 32

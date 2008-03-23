@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "jsconfig.h"
 #include "jspell.h"
@@ -599,36 +600,37 @@ static void det_prefstringchar(char *preftype)
 
 static void process_LibDict(char *LibDict, char *cpd)
 {
-    char *p;
-    static char libdictname[sizeof DEFHASH];
+	char *p;
+	static char libdictname[sizeof DEFHASH];
     
-    if (LibDict == NULL) {
-	strcpy(libdictname, DEFHASH);
-	LibDict = libdictname;
-	p = rindex(libdictname, '.');
-	if (p != NULL  &&  strcmp(p, ".hash") == 0)
-	    *p = '\0'; /* Don't want ext. in LibDict */
+	if (LibDict == NULL) {
+		strcpy(libdictname, DEFHASH);
+		LibDict = libdictname;
+		p = rindex(libdictname, '.');
+		if (p != NULL  &&  strcmp(p, ".hash") == 0)
+	    	*p = '\0'; /* Don't want ext. in LibDict */
     }
     if (!nodictflag)
-	treeinit(cpd, LibDict);
+		treeinit(cpd, LibDict);
 }
 
 static int process_a_e_and_d_flags(void) 
 {
-    int res;
+	int res;
     
-    res = 0;
-    if (aflag) {
-	if (!islib) {
-	    askmode();
-	    treeoutput();
+	res = 0;
+	if (aflag) {
+		if (!islib) {
+			askmode();
+			treeoutput();
+		}
+	} else if (eflag) {
+		expandmode(eflag);
+	} else if (dumpflag) {
+		dumpmode();
+	} else {
+		res = 1;		
 	}
-    } else if (eflag) {
-	expandmode(eflag);
-    } else if (dumpflag) {
-	dumpmode();
-    } else
-	res = 1;
     return res;
 }
 
@@ -790,7 +792,7 @@ int my_main(int argc, char *argv[], char lib)
     }
 
     if (!argc  &&  !lflag  &&  !aflag   &&  !eflag  &&  !dumpflag)
-	usage(Cmd);
+		usage(Cmd);
 
     verify_files(argc, argv);
 
@@ -800,32 +802,32 @@ int my_main(int argc, char *argv[], char lib)
     det_prefstringchar(preftype);
 
     if (prefstringchar < 0)
-	defdupchar = 0;
+		defdupchar = 0;
     else
-	defdupchar = prefstringchar;
+		defdupchar = prefstringchar;
 
     if (missingspaceflag < 0)
-	missingspaceflag = hashheader.defspaceflag;
+		missingspaceflag = hashheader.defspaceflag;
     if (tryhardflag < 0)
-	tryhardflag = hashheader.defhardflag;
+		tryhardflag = hashheader.defhardflag;
 
     initckch(wchars);
 
     process_LibDict(LibDict, cpd);
 
     if (process_a_e_and_d_flags() == 0)
-	return 0;
+		return 0;
 
     if (!islib)
-	setbuf(stdout, outbuf);
+		setbuf(stdout, outbuf);
 
     /* process lflag (also used with the -c option) */
     if (lflag) {
-	infile = stdin;
-	outfile = stdout;
-	if (!islib)
-	    checkfile();
-	return 0;
+		infile = stdin;
+		outfile = stdout;
+		if (!islib)
+	    	checkfile();
+		return 0;
     }
 
     /* n. of parameters advanced */
@@ -900,11 +902,15 @@ static void open_outfile(struct stat *statbuf)
     
     fstat(fileno(infile), statbuf);
     strcpy(tempfile, TEMPNAME);
+#ifdef __WIN__
+	file_descriptor = open(mktemp(tempfile),O_CREAT | O_RDWR | O_BINARY);
+#else
     file_descriptor = mkstemp(tempfile);
+#endif
     if ((outfile = fdopen(file_descriptor, "w")) == NULL) {
-	fprintf(stderr, CANT_CREATE, tempfile);
-	sleep((unsigned) 2);
-	return;
+		fprintf(stderr, CANT_CREATE, tempfile);
+		sleep((unsigned) 2);
+		return;
     }
     chmod(tempfile, statbuf->st_mode);
 }
@@ -915,23 +921,25 @@ static void update_file(char *filename, struct stat *statbuf)
     int c;
 
     if ((infile = fopen(tempfile, "r")) == NULL) {
-	fprintf(stderr, ISPELL_C_TEMP_DISAPPEARED, tempfile);
-	sleep((unsigned) 2);
-	return;
+		fprintf(stderr, ISPELL_C_TEMP_DISAPPEARED, tempfile);
+		sleep((unsigned) 2);
+		return;
     }
 
     sprintf(bakfile, "%s%s", filename, BAKEXT);
 
     if (strncmp(filename, bakfile, MAXNAMLEN) != 0)
-	unlink(bakfile);        /* unlink so we can write a new one. */
+		unlink(bakfile);        /* unlink so we can write a new one. */
+#ifdef __WIN__
+#else
     if (link(filename, bakfile) == 0)
-	unlink(filename);
-    
+		unlink(filename);
+#endif
     /* if we can't write new, preserve .bak regardless of xflag */
     if ((outfile = fopen(filename, "w")) == NULL) {
-	fprintf(stderr, CANT_CREATE, filename);
-	sleep((unsigned) 2);
-	return;
+		fprintf(stderr, CANT_CREATE, filename);
+		sleep((unsigned) 2);
+		return;
     }
 
     chmod(filename, statbuf->st_mode);

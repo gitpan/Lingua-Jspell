@@ -26,19 +26,29 @@ if (not Config::AutoConf->check_cc()) {
 	print " [found]\n"
 }
 
-print "Checking for a working YACC processor...";
-my $yacc;
-if (!($yacc = Config::AutoConf->check_prog_yacc())) {
-	die "I need one of bison, byacc or yacc. Please install one!\n" 	
+
+
+# print "Checking for a working YACC processor...";
+# my $yacc;
+# if (!($yacc = Config::AutoConf->check_prog_yacc())) {
+#  	die "I need one of bison, byacc or yacc. Please install one!\n" 	
+# } else {
+#  	print " [found]\n"
+# }
+
+my $LCURSES="";
+my $CCURSES="";
+print "Checking for a working ncurses library...";
+if (not Config::AutoConf->check_lib("ncurses", "tgoto")) {
+	print " [not found]\n";
+	$CCURSES="-DNOCURSES";
 } else {
+	$LCURSES="-lncurses";
 	print " [found]\n"
 }
 
-print "Checking for a working ncurses library...";
-if (not Config::AutoConf->check_lib("ncurses", "tgoto")) {
-	die "I need ncurses library. Please install it!\n" 	
-} else {
-	print " [found]\n"
+if ($^O eq "MSWin32") {
+	$CCURSES.=" -D__WIN__"
 }
 
 interpolate('src/jsconfig.in','src/jsconfig.h',%c_config);
@@ -46,7 +56,7 @@ interpolate('scripts/jspell-dict.in','scripts/jspell-dict',%c_config);
 interpolate('scripts/installdic.in','scripts/installdic.pl',%c_config);
 
 # prepare a C compiler
-my $cc = ExtUtils::CBuilder->new(quiet => 1);
+my $cc = ExtUtils::CBuilder->new(quiet => 0);
 
 
 ### AGREP
@@ -69,31 +79,31 @@ $cc->link_executable(objects  => [@agrep_objects],
 ### JSpell
 print "\nCompiling Jspell.\n";
 
-print " - parse.y -> y.tab.c\n";
-my $cmd = "cd src; $yacc parse.y";
-print `$cmd`;
-
+## print " - parse.y -> y.tab.c\n";
+## my $cmd = "cd src; $yacc parse.y";
+## print `$cmd`;
+## 
 
 my @jspell_source = qw~correct.c    good.c      jmain.c     makedent.c  tgood.c
-                       defmt.c      hash.c      jslib.c     tree.c
+                       defmt.c      hash.c      jslib.c     tree.c 
                        dump.c       jbuild.c    jspell.c    sc-corr.c   xgets.c
                        gclass.c     jjflags.c   lookup.c    term.c      y.tab.c~;
 my @jspell_objects = map {
 	print " - src/$_\n";
 	$cc->compile(
-		extra_compiler_flags => '-DVERSION=\\"'.$VERSION.'\\"',
+		extra_compiler_flags => $CCURSES.' -DVERSION=\\"'.$VERSION.'\\" -Wall',
 		source => "src/$_")} @jspell_source;
 my @jspell_shared = grep {$_ !~ /jbuild|jmain/ } @jspell_objects;		
 
-print " - building [jbuild] binary\n";
-$cc->link_executable(extra_linker_flags => '-lncurses',
-                     objects => [@jspell_shared,'src/jbuild.c'], 
-                     exe_file => "src/jbuild");
-
 print " - building [jspell] binary\n";
-$cc->link_executable(extra_linker_flags => '-lncurses',
-                     objects => [@jspell_shared,'src/jmain.c'],  
+$cc->link_executable(extra_linker_flags => "$LCURSES$CCURSES",
+                     objects => [@jspell_shared,'src/jmain.o'],  
                      exe_file => "src/jspell");
+					 
+print " - building [jbuild] binary\n";
+$cc->link_executable(extra_linker_flags => "$LCURSES$CCURSES",
+                     objects => [@jspell_shared,'src/jbuild.o'], 
+                     exe_file => "src/jbuild");
 
 print "\nBuilt International Jspell $VERSION.\n";
 
@@ -131,6 +141,7 @@ sub get_prefix {
 	}
 	close MAKEFILE;
 	die "Could not find INSTALLSITEBIN variable on your Makefile.\n" unless $prefix;
+	$prefix=~s/\\/\//g;
 	return $prefix;
 }
 

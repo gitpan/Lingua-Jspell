@@ -19,6 +19,7 @@
 #include "jsconfig.h"
 #include "jspell.h"
 #include "proto.h"
+
 #include "myterm.h"
 
 /**

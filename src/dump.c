@@ -128,8 +128,8 @@ register struct flagent *flagp;        /* Flag entry to dump */
    if (flagp->stripl)
       printf("-%s,", ichartosstr(flagp->strip, 1));
    printf("%s", flagp->affl ? ichartosstr(flagp->affix, 1) : "-");
-   if (flagp->class)
-      printf("\t; %s\n", ichartosstr(flagp->class, 1));
+   if (flagp->jclass)
+      printf("\t; %s\n", ichartosstr(flagp->jclass, 1));
 }
 
 /*---------------------------------------------------------------------------*/

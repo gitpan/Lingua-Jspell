@@ -1,5 +1,9 @@
 /* -*- c -*- */
 
+#ifdef __WIN__
+#include <windows.h>
+#define sleep(x) Sleep((x)*1000)
+#endif
 
 #include <sys/param.h>
 #include <sys/types.h>

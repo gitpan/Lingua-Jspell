@@ -21,11 +21,9 @@
 #define TCGETA                0x5405
 #endif
 
-#include <sys/ioctl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <curses.h>
 
 
 #include "jsconfig.h"
@@ -36,6 +34,8 @@
 
 #ifndef NOCURSES
 #include <termios.h>
+#include <curses.h>
+#include <sys/ioctl.h>
 #endif
 
 #include <signal.h>

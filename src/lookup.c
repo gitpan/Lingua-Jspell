@@ -17,7 +17,7 @@ static int inited = 0;
 static int verify_hash()
 /* verifica se esta tudo bem com o hashheader */
 {
-   if (hashsize < sizeof hashheader) {
+   if (hashsize < sizeof(hashheader)) {
       if (hashsize < 0)
          fprintf(stderr, LOOKUP_C_CANT_READ, hashname);
       else if (hashsize == 0)
@@ -78,7 +78,8 @@ static int creat_empty_table()
 
 static int read_hash_header(int hashfd)
 {
-   hashsize = read(hashfd, (char *) &hashheader, sizeof hashheader);
+   /* 20080322 - WAS: hashsize = read(hashfd, (char *) &hashheader, sizeof(hashheader)); */
+   hashsize = read(hashfd, (void*) &hashheader, sizeof(hashheader));
    if (verify_hash() == -1) return -1;
 
    if (nodictflag) {  /* d'ont remove these {} */
@@ -156,7 +157,7 @@ static void init_words(int hashfd)
             dp->word = &hashstrings[ind[0]];
 /*            printf("DEB- dp->word = %s\n", dp->word); */
 
-            if (n0 == 2 || n0 == 3) dp->class = &hashstrings[ind[1]];
+            if (n0 == 2 || n0 == 3) dp->jclass = &hashstrings[ind[1]];
 /*            else                    dp->class = NULL; */ /* is already null */
             if (n0 == 3)            dp->next = &hashtbl[ind[2]];
             else if (n0 == 4)       dp->next = &hashtbl[ind[1]];
@@ -188,9 +189,9 @@ static int read_generic_flag_info(int hashfd)
    for (i = 0; i < MASKBITS; i++) {
       if (read(hashfd, (char *) &(gentable[i].classl), sizeof(short)) ==
                                                        sizeof(short)) {
-         gentable[i].class = (ichar_t *) malloc(
+         gentable[i].jclass = (ichar_t *) malloc(
                               sizeof(ichar_t) * (gentable[i].classl + 1));
-         if (read(hashfd, (char *) gentable[i].class,
+         if (read(hashfd, (char *) gentable[i].jclass,
                   ((unsigned) (gentable[i].classl)+1) * sizeof(ichar_t))
              != (gentable[i].classl+1) * sizeof(ichar_t))
          {
@@ -223,7 +224,11 @@ static int read_info_from_disk()
 {
    int hashfd;
 
-   if ((hashfd = open(hashname, 0)) < 0) {
+#ifdef __WIN__ 
+   	if ((hashfd = open(hashname, O_RDONLY | O_BINARY)) < 0) {
+#else
+	if ((hashfd = open(hashname, O_RDONLY)) < 0) {
+#endif
       fprintf(stderr, CANT_OPEN, hashname);
       return -1;
    }
@@ -269,9 +274,9 @@ static int act_all_entry(void)
       else
          entry->affix = NULL;
       if (entry->classl)
-         entry->class = (ichar_t *) &hashstrings[(int) entry->class];
+         entry->jclass = (ichar_t *) &hashstrings[(int) entry->jclass];
       else
-         entry->class = NULL;
+         entry->jclass = NULL;
    }
 
    /*

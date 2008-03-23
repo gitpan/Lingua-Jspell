@@ -432,11 +432,11 @@ static char *get_class_info(int preflag, int sufflag)
    static char class_info[MAXCLASS];
 
    if (preflag > 0)
-      strcpy(class_info, ichartosstr(gentable[CHARTOBIT(preflag)].class, 0));
+      strcpy(class_info, ichartosstr(gentable[CHARTOBIT(preflag)].jclass, 0));
    else class_info[0] = '\0';
    if (sufflag > 0) {
       if (class_info[0] != '\0') strcat(class_info, "+");
-      strcat(class_info, ichartosstr(gentable[CHARTOBIT(sufflag)].class, 0));
+      strcat(class_info, ichartosstr(gentable[CHARTOBIT(sufflag)].jclass, 0));
    }
    return class_info;
 }
@@ -484,7 +484,7 @@ void flagpr(
       suf2flag = 0;
    }
    else {
-      suf2class = rhits[act_rec]->class;
+      suf2class = rhits[act_rec]->jclass;
       suf2flag = BITTOCHAR(rhits[act_rec]->flagbit);
    }
 

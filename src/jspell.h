@@ -137,7 +137,7 @@ typedef unsigned short  ichar_t;        /* Internal character */
 
 /* this should be modified if number of words >= 65535 */
 /* era.. unsigned short.. mas como o jslib tem unsigned int :-| */
-/* typedef unsigned int ID_TYPE;      /* NEW */  
+/* typedef unsigned int ID_TYPE;      --  NEW */  
 
 char *advance_beg(char *buf);
 int my_main(int argc, char *argv[], char lib);
@@ -152,7 +152,7 @@ void tree_saw_off(register ichar_t *word);
 struct dent {   /* dictionary entry */
    struct dent *next;
    char *   word;
-   char *   class;  /*CHANGE NEW*/
+   char *   jclass;  /*CHANGE NEW*/
    char *   comm;   /* comments*/  /*CHANGE NEW*/
    MASKTYPE mask[MASKSIZE];
 #ifdef FULLMASKSET
@@ -263,7 +263,7 @@ extern hash_info pers,   /* personal dictionary */
  * Language tables used to encode prefix and suffix information.
  */
 struct genflagent { /*CHANGE*/ /* NEW structure */
-   ichar_t * class;                  /* Class of flag */
+   ichar_t * jclass;                  /* Class of flag */
    short     classl;                 /* Length of class */
 };
 
@@ -273,7 +273,7 @@ struct flagent
 {
    ichar_t * strip;                  /* String to strip off */
    ichar_t * affix;                  /* Affix to append */
-   ichar_t * class;                  /* Class of affix */ /*CHANGE*/
+   ichar_t * jclass;                 /* Class of affix */ /*CHANGE*/
    short     flagbit;                /* Flag bit this ent matches */
    short     stripl;                 /* Length of strip */
    short     affl;                   /* Length of affix */
@@ -498,14 +498,14 @@ EXTERN struct flagent *rhits[MAX_HITS]; /* table of hits gotten in lookup */
 EXTERN char *  hashstrings;           /* Strings in hash table */
 EXTERN struct hashheader hashheader;  /* Header of hash table */
 EXTERN struct dent *     hashtbl;     /* Main hash table, for dictionary */
-EXTERN int     hashsize;              /* Size of main hash table */
+EXTERN int    hashsize;               /* Size of main hash table */
 
 EXTERN char    hashname[MAXPATHLEN]; /* Name of hash table file */
 
 EXTERN int     aflag;               /* NZ if -a or -A option specified */
 EXTERN int     cflag;               /* NZ if -c (crunch) option */
-EXTERN int     Jflag;               /* NZ if -J option specified JJoao */
-EXTERN int     showflags;           /* NZ if -z option */
+/* EXTERN int     Jflag;     */          /* NZ if -J option specified JJoao */
+/* EXTERN int     showflags;   */        /* NZ if -z option */
 EXTERN int     lflag;               /* NZ if -l (list) option */
 EXTERN int     incfileflag;         /* whether xgets() acts exactly like gets() */
 EXTERN int     nodictflag;          /* NZ if dictionary not needed */

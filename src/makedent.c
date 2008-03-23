@@ -164,8 +164,8 @@ int makedent(char *lbuf, int lbuflen, struct dent *d)
 #endif /* NO_CAPITALIZATION_SUPPORT */
    if (p) {
       p1 = cut_string(p+1);
-      if ((d->class = alloc_d(strlen(p+1)+1, lbuf)) == NULL) return -1;
-      strcpy(d->class, p+1);
+      if ((d->jclass = alloc_d(strlen(p+1)+1, lbuf)) == NULL) return -1;
+      strcpy(d->jclass, p+1);
       if (p1) { /* there is more info (flags, comments) */
          p1 = treat_flags(d, p1);
          if (*p1 == hashheader.flagmarker) {   /* there is a comment */
@@ -183,8 +183,8 @@ int makedent(char *lbuf, int lbuflen, struct dent *d)
       }
    }
    else {
-      if ((d->class = alloc_d(1, lbuf)) == NULL) return -1;
-      d->class[0] = '\0';
+      if ((d->jclass = alloc_d(1, lbuf)) == NULL) return -1;
+      d->jclass[0] = '\0';
    }
    d->saw = 0;
    return 0;
@@ -640,7 +640,7 @@ static void toutword(register FILE *toutfile, char *word,
 
    has_marker = 0;
    fprintf(toutfile, "%s%c%s%c", word, hashheader.flagmarker,
-                                 cent->class, hashheader.flagmarker);
+                                 cent->jclass, hashheader.flagmarker);
    for (bit = 0;  bit < LARGESTFLAG;  bit++) {
       if (TSTMASKBIT (cent->mask, bit))
          flagout(toutfile, BITTOCHAR (bit));
@@ -1017,7 +1017,7 @@ void init_gentable(void)
    int i;
 
    for (i = 0; i < MASKBITS; i++) {
-      gentable[i].class = NULL;
+      gentable[i].jclass = NULL;
       gentable[i].classl = 0;
    }
 }
@@ -1029,7 +1029,7 @@ void dump_gentable(void)
    int i;
 
    for (i = 0; i < MASKBITS; i++)
-       printf("i=%d, class[i]=%s\n", i, (char*)gentable[i].class);
+       printf("i=%d, class[i]=%s\n", i, (char*)gentable[i].jclass);
 }
 
 

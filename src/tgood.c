@@ -63,11 +63,11 @@ static void treat_cflag_see2(
 
    if (crossonly)
       flagpr(tword, BITTOCHAR(pfxent->flagbit), pfxent->stripl, pfxent->affl,
-             pfxent->class,
-             BITTOCHAR(flent->flagbit), flent->affl, flent->class);
+             pfxent->jclass,
+             BITTOCHAR(flent->flagbit), flent->affl, flent->jclass);
    else
       flagpr(tword, -1, 0, 0, 0,
-             BITTOCHAR(flent->flagbit), flent->affl, flent->class);
+             BITTOCHAR(flent->flagbit), flent->affl, flent->jclass);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ static void see_if_word_is_in_dictionary(
    tlen += flent->stripl;
    if (cflag) {
       flagpr(tword, BITTOCHAR(flent->flagbit), flent->stripl,
-                              flent->affl, flent->class, -1, 0, 0);
+                              flent->affl, flent->jclass, -1, 0, 0);
    }
    else if (ignoreflagbits) {   /* ignore if affix is legal */
        if ((dent = lookup(tword, 1)) != NULL) {
@@ -555,9 +555,9 @@ static int pr_pre_expansion(
       printf(SEP1);
    if (option == 3)
       printf("%s%s", croot, SEP1);
-   strcpy(class_aux, ichartosstr(flent->class, 1));
+   strcpy(class_aux, ichartosstr(flent->jclass, 1));
    if (option != 4) {
-      strcpy(root_info, ichartosstr(gentable[flent->flagbit].class, 0));
+      strcpy(root_info, ichartosstr(gentable[flent->flagbit].jclass, 0));
       print_expansion(croot, tword, extra, root_info, class_aux, "");
    }
    *put_sep = 1;
@@ -652,8 +652,8 @@ static int pr_suf_expansion(
    if (option == 3)
       printf("%s%s", croot, SEP1);
    if (option != 4) {
-      strcpy(class_aux, ichartosstr(flent->class, 1));
-      strcpy(root_info, ichartosstr(gentable[flent->flagbit].class, 0));
+      strcpy(class_aux, ichartosstr(flent->jclass, 1));
+      strcpy(root_info, ichartosstr(gentable[flent->flagbit].jclass, 0));
       print_expansion(croot, tword, extra, root_info, pre_class, class_aux);
    }
    *put_sep = 1;

@@ -8,8 +8,10 @@
 # define EXTERN2 extern
 #endif
 
+#ifndef NOCURSES
 #include <ncurses.h>
 #include <term.h>
+#endif
 
 #define CLEFT  256
 #define CRIGHT 257

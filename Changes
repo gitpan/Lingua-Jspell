@@ -1,5 +1,10 @@
 Revision history for Lingua-Jspell
 
+1.50_05 March 23, 2008
+	- Portability to Microsoft Windows under development
+	  (although without ncurses => no interactive spell checking)
+	  - Tested with Strawberry Perl v5.10.0
+
 1.50_04 March 21, 2008
 	- Corrected scripts/installdic.in to create directory before
       copying files.

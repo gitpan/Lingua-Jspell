@@ -91,9 +91,9 @@ void treat_flag_def(char *string, ichar_t *class, short flags)
    }
    /* NEW */
    i = CHARTOBIT(string[0]);
-   gentable[i].class = (ichar_t *) malloc(
+   gentable[i].jclass = (ichar_t *) malloc(
                        sizeof(ichar_t) * (icharlen(class) + 1));
-   icharcpy(gentable[i].class, class);
+   icharcpy(gentable[i].jclass, class);
    gentable[i].classl = icharlen(class);
 
    free((char *) string);
@@ -120,7 +120,7 @@ void treat_affix_rule(struct flagent *cond, ichar_t *strip,
    }
    else
       cond->affix = NULL;
-   cond->class = class;
+   cond->jclass = class;
    cond->classl = icharlen(class);
    /*
    * As a special optimization (and a concession to those who the syntax that

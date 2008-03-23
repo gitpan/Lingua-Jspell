@@ -69,4 +69,5 @@ src/tgood.c
 src/tree.c
 src/version.h
 src/xgets.c
+src/y.tab.c
 META.yml                                 Module meta-data (added by MakeMaker)

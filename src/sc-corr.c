@@ -10,8 +10,8 @@
 #include "good.h"
 /* this #define is necessay to term.h */
 #define MAIN2
-#include "myterm.h"
 
+#include "myterm.h"
 
 
 static char *input(int l, int c, char *st_out, char *st, int max);
@@ -26,7 +26,9 @@ void givehelp()
    char ch;
 #endif
 
+#ifndef NOCURSES
    erase();
+#endif
    printhelp(stdout);
 
    fprintf(stdout, "\r\n\r\n");
@@ -278,7 +280,9 @@ int dic_insert(char *ctok, ichar_t *itok, int put_lower, char **curchar)
    }
    else res = 0;
    strcpy(ctok, auxctoken);
+#ifndef NOCURSES
    clear();
+#endif
    fflush(stdout);
    return res;
 }
@@ -513,7 +517,7 @@ int do_replace_all(char *ctok, ichar_t *itok, char **curchar, char *begintoken)
 
    mk_upper(itok, nitok);
    if ((d = treelookup(nitok, &repl))) {
-      strcpy(ctok, ichartosstr(strtosichar(d->class, 1), 0));
+      strcpy(ctok, ichartosstr(strtosichar(d->jclass, 1), 0));
       replace_token(contextbufs[0], begintoken, ctok, curchar);
       return 1;
    }
@@ -618,7 +622,9 @@ void possible_quit()
    else
        c = 'y';
    if (c == 'y' || c == 'Y') {
+#ifndef NOCURSES
       erase();
+#endif
       fflush(stdout);
       done(0);
    }
@@ -628,7 +634,9 @@ void possible_quit()
 
 void screen_update(char *ctok)
 {
+#ifndef NOCURSES
    erase();
+#endif
    printf("    %s", ctok);
    if (currentfile)
       printf(CORR_C_FILE_LABEL, currentfile);
@@ -677,11 +685,16 @@ void jcorrect(char *ctok, ichar_t *itok,
          fflush(stdout);
          switch (c = (GETKEYSTROKE() & NOPARITY)) {
             case 'Z' & 037:     stop();
+#ifndef NOCURSES
                                 erase();
+#endif
                                 leave_options = 0;
                                 break;
 
-            case ' ':           erase();
+            case ' ':           
+#ifndef NOCURSES
+								erase();
+#endif
                                 fflush(stdout);
                                 break;
 
@@ -697,7 +710,9 @@ void jcorrect(char *ctok, ichar_t *itok,
 
             case 'a': case 'A': treeinsert(ichartosstr(strtosichar(ctok,0), 1),
                                            ICHARTOSSTR_SIZE, 0);
+#ifndef NOCURSES
                                 erase();
+#endif
                                 fflush(stdout);
                                 break;
 
@@ -735,7 +750,9 @@ void jcorrect(char *ctok, ichar_t *itok,
                                 break;
 
             case 'x': case 'X': quit = 1;
+#ifndef NOCURSES
                                 erase();
+#endif
                                 fflush(stdout);
                                 break;
 
