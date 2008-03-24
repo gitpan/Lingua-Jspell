@@ -1,0 +1,13 @@
+prefix=[% PREFIX %]
+exec_prefix=${prefix}/bin
+libdir=${prefix}/lib
+# includedir=@includedir@/numexp
+# idldir=${prefix}/share/idl
+
+Name: Jspell
+Description: Morphological analyser
+Version: [% VERSION %]
+Requires: 
+# Libs: -L${libdir} -ljspell
+# Cflags: -I${includedir}
+

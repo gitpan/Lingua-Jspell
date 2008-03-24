@@ -6,9 +6,29 @@ use File::Path;
 use warnings;
 use strict;
 
-eval {
-	require LWP::Simple
-};
+### Although the original idea of this script was just to install the
+### dictionary, the truth is that it can be handy as a generic
+### installation script, given that build.pl is run without
+### administrator privileges
+
+### ------------------------------------------------------------------
+
+### This first section installs the jspell.pc file.
+
+my $pkgdestpath = catfile("[% PREFIX %]","lib","pkgconfig");
+mkpath($pkgdestpath);
+$pkgdestpath = catfile($pkgdestpath, "jspell.pc");
+copy("jspell.pc",$pkgdestpath);
+
+### ------------------------------------------------------------------
+
+### This section fetches the hash file for the portuguese dictionary
+### from Natura's website and installs it. At the moment it checks for
+### LWP::Simple and Archive::Any, so it can perform the installation.
+### Later these modules might be in the list of required ones, and thus,
+### this script made simpler.
+
+eval { require LWP::Simple };
 if ($@) {
 	print STDERR "LWP::Simple is not available on your system.\n";
 	print STDERR "I'll not try to install any dictionary now.\n";
@@ -16,9 +36,7 @@ if ($@) {
 }
 LWP::Simple->import();
 
-eval {
-	require Archive::Any
-};
+eval { require Archive::Any };
 if ($@) {
 	print STDERR "Archive::Any is not available on your system.\n";
 	print STDERR "I'll not try to install any dictionary now.\n";
@@ -49,4 +67,5 @@ if (is_success(getstore($dicurl, "dic.tar.gz"))) {
 	print STDERR "I can't access the dictionary server this time.\n";
 	print STDERR "You will need to install dictionaries manually.\n";
 }
+
 

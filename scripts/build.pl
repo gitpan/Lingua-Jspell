@@ -12,7 +12,7 @@ my $VERSION = get_version();
 my $prefix = get_prefix();
 
 # Prepare a hash with variables for substitution on jsconfig.in
-my %c_config = (PREFIX => $prefix);
+my %c_config = (PREFIX => $prefix, VERSION => $VERSION);
 
 # Show some information to the user about what are we doing.
 print "\n - Building International Jspell $VERSION - \n";
@@ -54,9 +54,10 @@ if ($^O eq "MSWin32") {
 interpolate('src/jsconfig.in','src/jsconfig.h',%c_config);
 interpolate('scripts/jspell-dict.in','scripts/jspell-dict',%c_config);
 interpolate('scripts/installdic.in','scripts/installdic.pl',%c_config);
+interpolate('jspell.pc.in','jspell.pc',%c_config);
 
 # prepare a C compiler
-my $cc = ExtUtils::CBuilder->new(quiet => 0);
+my $cc = ExtUtils::CBuilder->new(quiet => 1);
 
 
 ### AGREP
@@ -94,6 +95,16 @@ my @jspell_objects = map {
 		extra_compiler_flags => $CCURSES.' -DVERSION=\\"'.$VERSION.'\\" -Wall',
 		source => "src/$_")} @jspell_source;
 my @jspell_shared = grep {$_ !~ /jbuild|jmain/ } @jspell_objects;		
+
+unless ($^O =~ /MSWin32/i) {
+	my $LIBEXT = ".so";
+	$LIBEXT = ".dylib" if $^O =~ /darwin/i;
+
+	print " - building [jspell] library\n";
+	$cc->link(extra_linker_flags => "$LCURSES$CCURSES",
+	          objects => [@jspell_shared],  
+	          lib_file => "src/libjspell$LIBEXT");	
+}
 
 print " - building [jspell] binary\n";
 $cc->link_executable(extra_linker_flags => "$LCURSES$CCURSES",

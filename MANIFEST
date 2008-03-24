@@ -1,7 +1,9 @@
 Changes
 MANIFEST
 Makefile.PL
+TODO
 README
+jspell.pc.in
 
 lib/Lingua/Jspell.pm
 lib/Lingua/Jspell/DictManager.pm

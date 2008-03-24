@@ -1,5 +1,11 @@
 Revision history for Lingua-Jspell
 
+1.50_06 March 24, 2008
+	- Added code to create dynamic libraries under MacOS and Linux.
+	  (although the library is build it needs some core rewritting
+	   before being really useful).
+	- Added jspell.pc to help other tools to detect the C library.
+	
 1.50_05 March 23, 2008
 	- Portability to Microsoft Windows under development
 	  (although without ncurses => no interactive spell checking)
