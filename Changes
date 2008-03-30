@@ -1,5 +1,13 @@
 Revision history for Lingua-Jspell
 
+1.50    March 30, 2008
+	- First stable release. Windows not supported yet.
+	  (waiting for ExtUtils::CBuilder update)
+
+	- Added code to create dynamic library under Strawberry Win.
+	- Added a new C file to define the global variables, so that we
+	  can build a library under windows.
+
 1.50_06 March 24, 2008
 	- Added code to create dynamic libraries under MacOS and Linux.
 	  (although the library is build it needs some core rewritting
@@ -13,7 +21,7 @@ Revision history for Lingua-Jspell
 
 1.50_04 March 21, 2008
 	- Corrected scripts/installdic.in to create directory before
-      copying files.
+	  copying files.
 
 1.50_03 March 20, 2008
 	- Corrected t/pod-coverage.t test to work with perl 5.10.0.

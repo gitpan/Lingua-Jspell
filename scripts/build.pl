@@ -57,7 +57,7 @@ interpolate('scripts/installdic.in','scripts/installdic.pl',%c_config);
 interpolate('jspell.pc.in','jspell.pc',%c_config);
 
 # prepare a C compiler
-my $cc = ExtUtils::CBuilder->new(quiet => 1);
+my $cc = ExtUtils::CBuilder->new(quiet => 0);
 
 
 ### AGREP
@@ -86,7 +86,7 @@ print "\nCompiling Jspell.\n";
 ## 
 
 my @jspell_source = qw~correct.c    good.c      jmain.c     makedent.c  tgood.c
-                       defmt.c      hash.c      jslib.c     tree.c 
+                       defmt.c      hash.c      jslib.c     tree.c      vars.c
                        dump.c       jbuild.c    jspell.c    sc-corr.c   xgets.c
                        gclass.c     jjflags.c   lookup.c    term.c      y.tab.c~;
 my @jspell_objects = map {
@@ -96,15 +96,15 @@ my @jspell_objects = map {
 		source => "src/$_")} @jspell_source;
 my @jspell_shared = grep {$_ !~ /jbuild|jmain/ } @jspell_objects;		
 
-unless ($^O =~ /MSWin32/i) {
-	my $LIBEXT = ".so";
-	$LIBEXT = ".dylib" if $^O =~ /darwin/i;
+my $LIBEXT = ".so";
+$LIBEXT = ".dylib" if $^O =~ /darwin/i;
+$LIBEXT = ".dll"   if $^O =~ /mswin32/i;
 
-	print " - building [jspell] library\n";
-	$cc->link(extra_linker_flags => "$LCURSES$CCURSES",
-	          objects => [@jspell_shared],  
-	          lib_file => "src/libjspell$LIBEXT");	
-}
+print " - building [jspell] library\n";
+$cc->link(extra_linker_flags => "$LCURSES$CCURSES",
+          objects => [@jspell_shared],  
+          lib_file => "src/libjspell$LIBEXT");	
+
 
 print " - building [jspell] binary\n";
 $cc->link_executable(extra_linker_flags => "$LCURSES$CCURSES",

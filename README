@@ -8,12 +8,13 @@ configuration. Given that main usage of Jspell is done through its Perl
 interface, Jspell is now made available as a Perl module, that includes
 the original C code unmodified.
 
-For the installation you need a C compiler and YACC or Bison. The
-building tools will try to detect them but it is not guaranteed that
-they will be detected correctly.
+For the installation you need a C compiler. The building tools will try
+to detect it but it is not guaranteed that it will be correctly detected. 
 
 Please refer to the documentation or http://natura.di.uminho.pt/ for
 further details on Jspell usage and Jspell dictionaries.
+
+
 
  INSTALLATION
 -------------------------------------------------------------------------------

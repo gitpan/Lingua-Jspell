@@ -6,10 +6,6 @@
    release of ExtUtils::CBuilder that compiles correctly under 
    Windows. This would make me happy!
 
- - Add a new C file to defined the global variables, so that we can
-   build a library under windows. This would need to change jmain.c and
-   jbuild.c so them do not define MAIN, and that new C file defines it.
-
  - Make jbuild and jspell link to the built dynamic library.
 
  - Add tests for all the tools. Not sure if they should rely on the
@@ -27,3 +23,4 @@
    Archive::Any. Probably these two modules should be made a
    requirement so no user ends up installing the module without a
    dictionary to test it with.
+

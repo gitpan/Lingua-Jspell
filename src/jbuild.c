@@ -6,7 +6,7 @@
  */
 
 /** define we are in the main file */
-#define MAIN
+/* #define MAIN */
 
 #include <string.h>
 

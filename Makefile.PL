@@ -8,6 +8,8 @@ use ExtUtils::MakeMaker;
 my $EXE = "";
 $EXE=".exe" if $^O eq "MSWin32";
 
+die "OS unsupported" if $EXE eq ".exe";
+
 
 WriteMakefile(
     NAME                => 'Lingua::Jspell',
@@ -33,7 +35,7 @@ WriteMakefile(
 		'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
 	},
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Lingua-Jspell-*' },
+    clean               => { FILES => 'Lingua-Jspell-* src/*.o agrep/*.o' },
 );
 
 package MY; # so that "SUPER" works right
