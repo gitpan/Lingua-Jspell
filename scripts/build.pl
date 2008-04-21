@@ -100,10 +100,10 @@ my $LIBEXT = ".so";
 $LIBEXT = ".dylib" if $^O =~ /darwin/i;
 $LIBEXT = ".dll"   if $^O =~ /mswin32/i;
 
-print " - building [jspell] library\n";
-$cc->link(extra_linker_flags => "$LCURSES$CCURSES",
-          objects => [@jspell_shared],  
-          lib_file => "src/libjspell$LIBEXT");	
+# print " - building [jspell] library\n";
+# $cc->link(extra_linker_flags => "$LCURSES$CCURSES",
+#          objects => [@jspell_shared],  
+#          lib_file => "src/libjspell$LIBEXT");	
 
 
 print " - building [jspell] binary\n";

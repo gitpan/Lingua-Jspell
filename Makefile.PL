@@ -2,13 +2,15 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
+use 5.008001;
+
 # NOT SURE IF I WANT THIS OR NOT
 # unlink "_jdummy_";
 
 my $EXE = "";
 $EXE=".exe" if $^O eq "MSWin32";
 
-die "OS unsupported" if $EXE eq ".exe";
+# die "OS unsupported" if $EXE eq ".exe";
 
 
 WriteMakefile(
@@ -18,16 +20,20 @@ WriteMakefile(
     ABSTRACT_FROM       => 'lib/Lingua/Jspell.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-		'Config::AutoConf'   => 0.07,
-		'ExtUtils::CBuilder' => 0.22,
-		'File::Which'        => 0,
+        'Config::AutoConf'   => 0.07,
+        'ExtUtils::CBuilder' => 0.22,
+        'File::Which'        => 0,
+        # This is not really needed, but Archive::Any needs it and misses the dependency
+        'Test::Pod::Coverage' => 0,
+        'Archive::Any'       => 0,
+        'LWP::Simple'        => 0,
         'Test::More'         => 0,
-		'IPC::Open2'         => 0,
+        'IPC::Open2'         => 0,
     },
 	EXE_FILES           => ["src/jspell$EXE",
-							"src/jbuild$EXE",
-							"agrep/agrep$EXE",
-							"scripts/jspell-dict"],
+				"src/jbuild$EXE",
+				"agrep/agrep$EXE",
+				"scripts/jspell-dict"],
 	MAN1PODS            => {
 		'src/jspell.pod'      => 'blib/man1/jspell.1',
 		'src/jspellaff.pod'   => 'blib/man1/jspellaff.1',
@@ -77,7 +83,7 @@ jspell: _jdummy_
 	\$(NOECHO) \$(NOOP)
 	
 src/y.tab.c: src/parse.y
-	yacc src/parse.y -o src/y.tab.c
+	yacc -o src/y.tab.c src/parse.y 
 	
 _jdummy_: @scripts @agrep @jspell scripts/build.pl
 	\$(PERL) scripts/build.pl
