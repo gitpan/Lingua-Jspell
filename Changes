@@ -1,5 +1,12 @@
 Revision history for Lingua-Jspell
 
+1.52    April 21, 2008
+	- Install both Portuguese and English dictionaries.
+	- Depend on ExtUtils::CBuilder 0.23, important for Windows OS. 
+
+1.51    April 21, 2008
+	- First release supporting Windows, but with a buggy Makefile.PL
+
 1.50    March 30, 2008
 	- First stable release. Windows not supported yet.
 	  (waiting for ExtUtils::CBuilder update)

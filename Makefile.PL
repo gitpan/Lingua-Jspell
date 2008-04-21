@@ -21,7 +21,7 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'Config::AutoConf'   => 0.07,
-        'ExtUtils::CBuilder' => 0.22,
+        'ExtUtils::CBuilder' => 0.23,
         'File::Which'        => 0,
         # This is not really needed, but Archive::Any needs it and misses the dependency
         'Test::Pod::Coverage' => 0,
@@ -41,7 +41,7 @@ WriteMakefile(
 		'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
 	},
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Lingua-Jspell-* src/*.o agrep/*.o' },
+    clean               => { FILES => "Lingua-Jspell-* src/*.o agrep/*.o agrep/agrep$EXE src/jbuild$EXE src/jspell$EXE _jdummy_" },
 );
 
 package MY; # so that "SUPER" works right

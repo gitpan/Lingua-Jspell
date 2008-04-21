@@ -44,28 +44,34 @@ if ($@) {
 }
 Archive::Any->import();
 
-my $dicurl = 'http://natura.di.uminho.pt/download/sources/Dictionaries/jspell/jspell.pt-bin-latest.tar.gz';
-if (is_success(getstore($dicurl, "dic.tar.gz"))) {
-	my $archive = Archive::Any->new("dic.tar.gz");
-	
-	my ($dir) = $archive->files;
-	$archive->extract();	
-	
-	my $destpath = catfile("[% PREFIX %]","lib","jspell");
-	
-	mkpath($destpath);
-	
-	for (qw~port.hash port.meta port.irr~) {
-		my ($from, $to) = (catfile($dir,$_), catfile($destpath,$_));
-		print "Installing [$from] as [$to]\n";
-		copy(catfile($dir,$_),catfile($destpath,$_));
-	}
-	unlink "dic.tar.gz";
-	rmtree($dir,1,1);
-	
-} else {
-	print STDERR "I can't access the dictionary server this time.\n";
-	print STDERR "You will need to install dictionaries manually.\n";
-}
+my $baseurl = 'http://natura.di.uminho.pt/download/sources/Dictionaries/jspell/';
+my $dics = [qw|jspell.pt-bin-latest.tar.gz jspell.en-bin-latest.tar.gz|];
 
+for my $dicurl (map { $baseurl.$_ } @$dics) {
+    if (is_success(getstore($dicurl, "dic.tar.gz"))) {
+    	my $archive = Archive::Any->new("dic.tar.gz");
+	
+    	my ($dir,@files) = $archive->files;
+    	$archive->extract();	
+	
+    	my $destpath = catfile("[% PREFIX %]","lib","jspell");
+	
+    	mkpath($destpath);
+	
+    	for (@files) {
+    	    if (m!\.(irr|meta|hash)$!) {
+    	        $_ =~ s/$dir//;
+        		my ($from, $to) = (catfile($dir,$_), catfile($destpath,$_));
+        		print "Installing [$_] as [$to]\n";
+        		copy(catfile($dir,$_),catfile($destpath,$_));    	        
+    	    }
+    	}
+    	unlink "dic.tar.gz";
+    	rmtree($dir,1,1);
+	
+    } else {
+    	print STDERR "I can't access the dictionary server this time.\n";
+    	print STDERR "You will need to install dictionaries manually.\n";
+    }
+}
 
