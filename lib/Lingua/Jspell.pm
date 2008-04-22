@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.52';
+our $VERSION = '1.53';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -34,14 +34,20 @@ our $DELIM = '===';
 our %STOP =();
 
 BEGIN {
+  my $EXE = "";
+  $EXE=".exe" if $^O eq "MSWin32";
+#  my $BAT = "";
+#  $BAT=".bat" if $^O eq "MSWin32";
+
   # Search for jspell binary.
   $JSPELL = which("jspell");
   my $JSPELLDICT = which("jspell-dict");
   if (!$JSPELL) {
 	# check if we are running under make test
-	$JSPELL = "blib/script/jspell";
+	$JSPELL = "blib/script/jspell$EXE";
 	$JSPELLDICT = "blib/script/jspell-dict";
 	$JSPELL = undef unless -e $JSPELL;
+        die "jspell binary cannot be found!\n" unless $JSPELL;
   }
   die "jspell binary cannot be found!\n" unless -e $JSPELL;
 
@@ -106,10 +112,14 @@ sub new {
   }
 
   $self->{pid} = open3($self->{DW},$self->{DR},$self->{DE},
-		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o'%s!%s:%s:%s:%s'") ||
+		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o\"%s!%s:%s:%s:%s\"") ||
 			 die "Cannot find 'jspell'";
   binmode($self->{DW},":bytes");
-  binmode($self->{DR},":bytes");
+  if ($^O ne "MSWin32") {
+	binmode($self->{DR},":bytes");
+  } else {
+	binmode($self->{DR},":crlf:bytes");
+  }
   $dr = $self->{DR};
   my $first_line = <$dr>;
 
@@ -277,7 +287,7 @@ sub der {
   my %res = ();
   my $command;
 
-  $command = sprintf("echo '%s'|$JSPELL -d $self->{dictionary} -e -o '' ",join("\n",@der));
+  $command = sprintf("echo \"%s\"|$JSPELL -d $self->{dictionary} -e -o \"\" ",join("\n",@der));
 
   local $/ = "\n";
 

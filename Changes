@@ -1,5 +1,12 @@
 Revision history for Lingua-Jspell
 
+1.53    April 22, 2008
+	- Fix problems with carriage return under Windows platforms;
+	- Fix problems with ' being used on command lines under Windows;
+	- Suggest the use of codepage 1252 under Windows for correct 
+	  latin1 display (chcp 1252), and the configuration of a TTF 
+	  on the command prompt terminal.
+
 1.52    April 21, 2008
 	- Install both Portuguese and English dictionaries.
 	- Depend on ExtUtils::CBuilder 0.23, important for Windows OS. 
