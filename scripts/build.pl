@@ -38,14 +38,27 @@ if (not Config::AutoConf->check_cc()) {
 
 my $LCURSES="";
 my $CCURSES="";
-print "Checking for a working ncurses library...";
-if (not Config::AutoConf->check_lib("ncurses", "tgoto")) {
+print "Checking for ncurses.h header file...";
+if (not Config::AutoConf->check_header("ncurses.h")) {
 	print " [not found]\n";
 	$CCURSES="-DNOCURSES";
 } else {
-	$LCURSES="-lncurses";
 	print " [found]\n"
 }
+
+if ($CCURSES ne "-DNOCURSES") {
+    # skip the library test if we do not have the header file.
+    
+    print "Checking for a working ncurses library...";
+    if (not Config::AutoConf->check_lib("ncurses", "tgoto")) {
+    	print " [not found]\n";
+    	$CCURSES="-DNOCURSES";
+    } else {
+    	$LCURSES="-lncurses";
+    	print " [found]\n"
+    }    
+}
+
 
 if ($^O eq "MSWin32") {
 	$CCURSES.=" -D__WIN__"
@@ -100,10 +113,11 @@ my $LIBEXT = ".so";
 $LIBEXT = ".dylib" if $^O =~ /darwin/i;
 $LIBEXT = ".dll"   if $^O =~ /mswin32/i;
 
-# print " - building [jspell] library\n";
-# $cc->link(extra_linker_flags => "$LCURSES$CCURSES",
-#          objects => [@jspell_shared],  
-#          lib_file => "src/libjspell$LIBEXT");	
+print " - building [jspell] library\n";
+$cc->link(extra_linker_flags => "$LCURSES$CCURSES",
+          module_name => "jspell",
+          objects => [@jspell_shared],  
+          lib_file => "src/libjspell$LIBEXT");	
 
 
 print " - building [jspell] binary\n";

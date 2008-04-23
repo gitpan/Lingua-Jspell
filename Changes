@@ -1,11 +1,17 @@
 Revision history for Lingua-Jspell
 
+1.54    April 23, 2008
+	- Add code to check ncurses.h header file availability;
+	- a Jspell library is now built under Linux, MacOS and Windows;
+	  Unfortunately I couldn't test it yet. Things should get better
+	  in the next few days.
+
 1.53    April 22, 2008
 	- Fix problems with carriage return under Windows platforms;
 	- Fix problems with ' being used on command lines under Windows;
 	- Suggest the use of codepage 1252 under Windows for correct 
-	  latin1 display (chcp 1252), and the configuration of a TTF 
-	  on the command prompt terminal.
+	  latin1 display (chcp 1252), and the configuration of a True
+	  Type Font on the command prompt terminal.
 
 1.52    April 21, 2008
 	- Install both Portuguese and English dictionaries.

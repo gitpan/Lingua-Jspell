@@ -20,7 +20,7 @@ WriteMakefile(
     ABSTRACT_FROM       => 'lib/Lingua/Jspell.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-        'Config::AutoConf'   => 0.07,
+        'Config::AutoConf'   => 0.09,
         'ExtUtils::CBuilder' => 0.23,
         'File::Which'        => 0,
         # This is not really needed, but Archive::Any needs it and misses the dependency
