@@ -1,5 +1,9 @@
 Revision history for Lingua-Jspell
 
+1.55    June 3, 2008
+	- Removed agrep source code and its dependency;
+	- Corrected dependencies on some modules;
+
 1.54    April 23, 2008
 	- Add code to check ncurses.h header file availability;
 	- a Jspell library is now built under Linux, MacOS and Windows;

@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.54';
+our $VERSION = '1.55';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -349,17 +349,47 @@ sub verif {
 
 =head2 nlgrep
 
+  @line = $d->nlgrep( word , files);
+  @line = $d->nlgrep( [word1, wordn] , files);
+
+or with options to set a max number of entries, rec. separator, or tu use
+radtxt files format.
+
+  @line = $d->nlgrep( {max=>100, sep => "\n", radtxt=>0} , pattern , files);
+
 =cut
 
 sub nlgrep {
+  my ($self ) = shift;
   # max=int, sep:str, radtxt:bool
   my %opt = (max=>10000, sep => "\n",radtxt=>0);
   %opt = (%opt,%{shift(@_)}) if ref($_[0]) eq "HASH";
 
   my $p = shift;
 
-  my $pattern = $opt{radtxt} ? $p : join("|",(der($p)));
-  my $p2 = qr/\b(?:$pattern)\b/i;
+  if(!ref($p) && $p =~ /[ ()*,]/){ 
+     $p = [map {/\w/ ? ($_):()} split(/[ ()*\|,]/,$a)];}
+
+  my $p2 ;
+
+  if(ref($p) eq "ARRAY"){
+    if($opt{radtxt}){ 
+      my @pat =  @$p ;
+      $p2 = sub{ my $x=shift; 
+                 for(@pat){ return 0 unless $x =~ /\b(?:$_)\b/i;}
+                 return 1; };
+    }
+    else {
+      my @pat =  map {join("|",($_,$self->der($_)))} @$p ;
+      $p2 = sub{ my $x=shift; 
+                 for(@pat){ return 0 unless $x =~ /\b(?:$_)\b/i;}
+                 return 1; }
+    }
+  }
+  else {
+    my $pattern = $opt{radtxt} ? $p : join("|",($p,$self->der($p)));
+    $p2 = sub{ $_[0] =~ /\b(?:$pattern)\b/i };
+  } 
 
   my @file_list=@_;
   local $/=$opt{sep};
@@ -369,8 +399,7 @@ sub nlgrep {
   for(@file_list) {
     open(F,$_) or die("cant open $_\n");
     while(<F>) {
-      # if(/\b(?:$pattern)\b/io){}
-      if (/$p2/) {
+      if ($p2->($_)) {
         chomp;
         s/$DELIM.*//g if $opt{radtxt};
         push(@res,$_);

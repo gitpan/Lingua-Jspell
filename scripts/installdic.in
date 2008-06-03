@@ -3,6 +3,8 @@
 use File::Copy;
 use File::Spec::Functions;
 use File::Path;
+use LWP::Simple;
+use Archive::Any;
 use warnings;
 use strict;
 
@@ -27,22 +29,6 @@ copy("jspell.pc",$pkgdestpath);
 ### LWP::Simple and Archive::Any, so it can perform the installation.
 ### Later these modules might be in the list of required ones, and thus,
 ### this script made simpler.
-
-eval { require LWP::Simple };
-if ($@) {
-	print STDERR "LWP::Simple is not available on your system.\n";
-	print STDERR "I'll not try to install any dictionary now.\n";
-	exit;
-}
-LWP::Simple->import();
-
-eval { require Archive::Any };
-if ($@) {
-	print STDERR "Archive::Any is not available on your system.\n";
-	print STDERR "I'll not try to install any dictionary now.\n";
-	exit;	
-}
-Archive::Any->import();
 
 my $baseurl = 'http://natura.di.uminho.pt/download/sources/Dictionaries/jspell/';
 my $dics = [qw|jspell.pt-bin-latest.tar.gz jspell.en-bin-latest.tar.gz|];

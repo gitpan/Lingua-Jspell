@@ -23,16 +23,13 @@ WriteMakefile(
         'Config::AutoConf'   => 0.09,
         'ExtUtils::CBuilder' => 0.23,
         'File::Which'        => 0,
-        # This is not really needed, but Archive::Any needs it and misses the dependency
-        'Test::Pod::Coverage' => 0,
-        'Archive::Any'       => 0,
+        'Archive::Any'       => 0.0932,
         'LWP::Simple'        => 0,
         'Test::More'         => 0,
         'IPC::Open2'         => 0,
     },
 	EXE_FILES           => ["src/jspell$EXE",
 				"src/jbuild$EXE",
-				"agrep/agrep$EXE",
 				"scripts/jspell-dict"],
 	MAN1PODS            => {
 		'src/jspell.pod'      => 'blib/man1/jspell.1',
@@ -41,12 +38,11 @@ WriteMakefile(
 		'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
 	},
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => "Lingua-Jspell-* src/*.o agrep/*.o agrep/agrep$EXE src/jbuild$EXE src/jspell$EXE _jdummy_" },
+    clean               => { FILES => "Lingua-Jspell-* src/*.o src/jbuild$EXE src/jspell$EXE _jdummy_" },
 );
 
 package MY; # so that "SUPER" works right
 
-our @agrep;
 our @jspell;
 our @scripts;
 
@@ -55,7 +51,6 @@ BEGIN {
 	open M, "MANIFEST" or die "Weirdo. I can't read MANIFEST!";
 	while (<M>) {
 		chomp;
-		push @agrep, $_ if /^agrep.*[ch]$/;
 		push @jspell, $_ if /^src.*[ch]$/;
 		push @scripts, $_ if /^scripts.*in$/;
 	}
@@ -85,7 +80,7 @@ jspell: _jdummy_
 src/y.tab.c: src/parse.y
 	yacc -o src/y.tab.c src/parse.y 
 	
-_jdummy_: @scripts @agrep @jspell scripts/build.pl
+_jdummy_: @scripts @jspell scripts/build.pl
 	\$(PERL) scripts/build.pl
 
 MAKE_FRAG
