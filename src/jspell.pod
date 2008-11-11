@@ -27,15 +27,19 @@ B<jspell> is a morphological analyzer. It can be used in four different ways:
 =over 4
 
 =item *
+
 as a standard B<C> library;
 
 =item *
+
 as a non buffered command line application;
 
 =item *
+
 as a command interpreter;
 
 =item *
+
 as an interactive program.
 
 =back
@@ -53,10 +57,12 @@ The suggestion can be formed in two ways:
 =over 4
 
 =item *
+
 detection of approximated words (words that miss a letter, or
 have some of them changed; Normally we call this I<near misses>);
 
 =item *
+
 using formation rules, starting at a known root (although
 there are no I<flags> to tell that derivation is correct, it
 will be shown as well.
@@ -273,7 +279,7 @@ or C<^>.
 
 =over 4
 
-=item *
+=item C<*>
 
 Add to personal dictionary. You can add the class, flags and comments
 using the dictionary separator.

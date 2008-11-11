@@ -15,6 +15,7 @@ t/pod.t
 scripts/build.pl
 scripts/installdic.in
 scripts/jspell-dict.in
+scripts/ujspell.in
 scripts/jspellfea
 
 src/correct.c

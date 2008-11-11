@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Basename;
+use File::Spec::Functions;
+use IPC::Open3;
+
+my $encontrei_l = 0;
+$encontrei_l = 1 if grep {$_ eq "-l"} @ARGV;
+
+unshift @ARGV, "-a" if !$encontrei_l;
+
+binmode(STDIN,":utf8");
+binmode(STDOUT,":utf8");
+
+my ($DW,$DR,$DE);
+my $exe = catfile("[% PREFIX %]","bin","jspell");
+open3($DW,$DR,$DE,$exe,@ARGV);
+
+binmode($DW,":encoding(iso-8859-1)");
+binmode($DR,":encoding(iso-8859-1)");
+
+if ($encontrei_l) {
+	while (<STDIN>) {
+		print $DW $_;
+	}
+	close $DW;
+	while (<$DR>) {
+		print;
+	}
+} else {
+	my $x = <$DR>;
+	print $x;
+	while(<STDIN>) {
+		print $DW $_;
+		print_lines($DR);
+	}
+	close $_ for ($DW,$DR,$DE);	
+}
+
+sub print_lines {
+	my $handler = shift;
+	my $l;
+	do {
+		$l = <$handler>;
+		chomp($l);
+		print "$l\n";
+	} while ($l ne "");
+}

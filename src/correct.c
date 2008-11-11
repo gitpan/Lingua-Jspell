@@ -418,19 +418,20 @@ void makepossibilities(register ichar_t *word)
 
    if (!yflag) {  /* not supressing typing errors */
       if (pcount < MAXPOSSIBLE)
-         missingletter(word);                /* omission */
+         missingletter(word);               /* omission */
       if (pcount < MAXPOSSIBLE)
-         transposedletter(word);        /* transposition */
+         transposedletter(word);       /* transposition */
       if (pcount < MAXPOSSIBLE)
          extraletter(word);                /* insertion */
       if (pcount < MAXPOSSIBLE)
-         wrongletter(word);                /* substitution */
+         wrongletter(word);             /* substitution */
 
       if (missingspaceflag  &&  pcount < MAXPOSSIBLE && !aflag)
          missingspace(word);        /* two words */
    }
    easypossibilities = pcount;
-   if (easypossibilities == 0  ||  tryhardflag)
+
+   if (tryhardflag)
       tryveryhard(word);
 
    if ((sortit  || (pcount > easypossibilities))  &&  pcount) {

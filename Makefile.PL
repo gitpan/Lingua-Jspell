@@ -29,8 +29,9 @@ WriteMakefile(
         'IPC::Open2'         => 0,
     },
 	EXE_FILES           => ["src/jspell$EXE",
-				"src/jbuild$EXE",
-				"scripts/jspell-dict"],
+							"src/jbuild$EXE",
+							"scripts/jspell-dict",
+							"scripts/ujspell"],
 	MAN1PODS            => {
 		'src/jspell.pod'      => 'blib/man1/jspell.1',
 		'src/jspellaff.pod'   => 'blib/man1/jspellaff.1',

@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.55';
+our $VERSION = '1.56';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -58,8 +58,8 @@ BEGIN {
 
     use Lingua::Jspell;
 
-    my $dic = Lingua::Jspell->new( "dict_name");
-    my $dic = Lingua::Jspell->new( "dict_name" , "personal_dict_name");
+    my $dict = Lingua::Jspell->new( "dict_name");
+    my $dict = Lingua::Jspell->new( "dict_name" , "personal_dict_name");
 
     $dict->rad("gatinho");      # list of radicals (gato)
 
@@ -94,7 +94,8 @@ sub new {
   ## Get meta info
   my $meta_file = _meta_file($self->{dictionary});
   if (-f $meta_file) {
-    open META, $meta_file or die "$!";
+    open META, $meta_file or die $!;
+	binmode(META,":encoding(iso-8859-1)");
     while(<META>) {
       next if m!^\s*$!;
       next if m!^\s*#!;
@@ -114,11 +115,11 @@ sub new {
   $self->{pid} = open3($self->{DW},$self->{DR},$self->{DE},
 		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o\"%s!%s:%s:%s:%s\"") ||
 			 die "Cannot find 'jspell'";
-  binmode($self->{DW},":bytes");
+  binmode($self->{DW},":encoding(iso-8859-1)");
   if ($^O ne "MSWin32") {
-	binmode($self->{DR},":bytes");
+	binmode($self->{DR},":encoding(iso-8859-1)");
   } else {
-	binmode($self->{DR},":crlf:bytes");
+	binmode($self->{DR},":crlf:encoding(iso-8859-1)");
   }
   $dr = $self->{DR};
   my $first_line = <$dr>;
@@ -133,6 +134,31 @@ sub new {
 
 =head2 setmode
 
+   $dict->setmode({flags => 0, nm => "off" });
+
+=over 4
+
+=item af
+
+Enable near misses, don't use rules where they are not applied, do not
+give suggestions by swapping adjacent letters on the original word.
+
+=item full
+
+Enable near misses, try to use rules where they are not applied, try 
+to give suggestions by swapping adjacent letters on the original word.
+
+=item cc
+
+Enable near misses, don't use rules where they are not applied, try 
+to give suggestions by swapping adjacent letters on the original word.
+
+=item off
+
+Disable near misses at all.
+
+=back
+
 =cut
 
 sub setmode {
@@ -143,7 +169,7 @@ sub setmode {
     $self->{mode} = $mode;
     print $dw _mode($mode);
   } else {
-    return $self->{mode}
+    return $self->{mode};
   }
 }
 
@@ -796,6 +822,8 @@ sub _mode {
       { $r .= "\$G\n\$Y\n\$m\n" }
     elsif ($m->{nm} eq "cc")
       { $r .= "\$G\n\$P\n\$Y\n" }
+    elsif ($m->{nm} eq "off")
+      { $r .= "\$g\n\$P\n\$y\n" }
     else {}
   }
   if ($m->{flags})          {$r .= "\$z\n"}
