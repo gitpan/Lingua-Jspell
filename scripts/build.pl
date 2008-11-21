@@ -9,15 +9,9 @@ use ExtUtils::CBuilder;
 
 # Gather some variables
 my $VERSION = get_version();
-my $prefix = get_prefix();
-
-# Prepare a hash with variables for substitution on jsconfig.in
-my %c_config = (PREFIX => $prefix, VERSION => $VERSION);
 
 # Show some information to the user about what are we doing.
 print "\n - Building International Jspell $VERSION - \n";
-
-print "\nCompiling software for [$prefix].\n";
 
 print "Checking for a working C compiler...";
 if (not Config::AutoConf->check_cc()) {
@@ -26,7 +20,19 @@ if (not Config::AutoConf->check_cc()) {
 	print " [found]\n"
 }
 
+print "Checking for a make command...";
+my $make = Config::AutoConf->check_progs("make","dmake","nmake");
+if (!$make) {
+	die "I need a ake program. Please install one!\n"
+} else {
+	print " [found]\n"
+}
 
+# Gather some more variables
+my $prefix = get_prefix($make);
+
+# Prepare a hash with variables for substitution on jsconfig.in
+my %c_config = (PREFIX => $prefix, VERSION => $VERSION);
 
 # print "Checking for a working YACC processor...";
 # my $yacc;
@@ -59,6 +65,7 @@ if ($CCURSES ne "-DNOCURSES") {
     }    
 }
 
+print "\nCompiling software for [$prefix].\n\n";
 
 if ($^O eq "MSWin32") {
 	$CCURSES.=" -D__WIN__"
@@ -120,15 +127,12 @@ open TS, '>_jdummy_' or die ("Cant create timestamp [_jdummy_].\n");
 print TS scalar(localtime);
 close TS;
 
-# put agrep.1 file on the right place for installation
-copy("agrep/agrep.1","blib/man1/agrep.1");
-
 
 # #-------------------------------------------------------------------
 sub interpolate {
 	my ($from, $to, %config) = @_;
 	
-	print "Generating [$to] from template [$from].\n";
+	print "Generating $to...\n";
 	open FROM, $from or die "Cannot open file [$from] for reading.\n";
 	open TO, ">", $to or die "Cannot open file [$to] for writing.\n";
 	while (<FROM>) {
@@ -140,15 +144,11 @@ sub interpolate {
 }
 
 sub get_prefix {
+	my $make_cmd = shift;
 	my $prefix = undef;
-	open MAKEFILE, "Makefile" or die "Cannot open file [Makefile] for reading\n";
-	while(<MAKEFILE>) {
-		if (m!^SITEPREFIX\s*=\s*(.*)$!) {
-			$prefix = $1;
-			last;
-		}
-	}
-	close MAKEFILE;
+	open PATH, "$make_cmd printprefix|" or die "Can't execute '$make_cmd printprefix'!\n";
+	chomp($prefix = <PATH>);
+	close PATH;
 	die "Could not find INSTALLSITEBIN variable on your Makefile.\n" unless $prefix;
 	$prefix=~s/\\/\//g;
 	return $prefix;

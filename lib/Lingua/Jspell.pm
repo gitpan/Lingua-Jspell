@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.56';
+our $VERSION = '1.57';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -845,152 +845,8 @@ sub _irr_file {
 
 
 
-1; # End of Lingua::Jspell
+
+'\o/ yay!'; # End of Lingua::Jspell
 
 __END__
 
-
-# sub nlgrepold {
-#   my $proc=shift;
-#   my $file_list=join(' ',@_);
-#   local $/="\n";
-
-#   open(TMPp,"> $tmp/_jspell$$") || die(" can't open tmp ");
-#   for (der($proc)) { print TMPp "$_\n" unless $STOP{$_}; }
-#   close(TMPp);
-
-#   my @res=();
-#   for (`$agrep -h -i -w -f $tmp/_jspell$$ $file_list`) {
-#     push(@res,$_);
-#   }
-#   unlink "$tmp/_jspell$$";
-#   @res;
-# }
-
-# sub nlgrepold2 {
-#   my $p=shift;
-#   my %opt=();           # max=int, sep:str, radtxt:bool
-#   if(ref($p) eq "HASH"){
-#     %opt=%$p;
-#     $p=shift}
-
-#   my $file_list=join(' ',@_);
-#   local $/=$opt{sep} || "\n";
-
-#   my $max="";
-#   $max = "|head -$opt{max}" if $opt{'max'};
-#   my $sep="";
-#   $sep = "-d '$opt{sep}' -t " if $opt{sep};
-
-#   unless($opt{radtxt}){
-#     open(TMPp,"> $tmp/_jspell$$") || die(" can't open tmp ");
-#     for (der($p)) { print TMPp "$_\n" unless $STOP{$_}; }
-#     close(TMPp);
-#   }
-
-#   my @res=();
-#   if(defined $opt{radtxt}){
-#     for (`$agrep -h -i -w '$p' $file_list  $max`) {
-#       chomp;
-#       s/$DELIM.*//g;
-#       push(@res,$_);
-#     } }
-#   else{
-#     for (`$agrep $sep -h -i -w -f $tmp/_jspell$$ $file_list $max`) {
-#       chomp;
-#       push(@res,$_);
-#     } }
-#   unlink "$tmp/_jspell$$" unless $opt{radtxt};
-#   @res;
-# }
-
-sub nlgrep1{
-  my $proc = shift;
-  my $file_list = join(' ',@_);
-  local $/="\n";
-
-  my @res=();
-  for (`$agrep -h -i -w '$proc' $file_list`) {
-    if( /(.*?)$DELIM/){ push(@res,$1) };
-  }
-  @res;
-}
-
-sub nlgrep3 {
-  my $proc=shift;
-  my $qt=shift;
-  my $file_list=join(' ',@_);
-  local $/="\n";
-
-  open(TMPp,"> $tmp/_jspell$$") || die(" can't open tmp ");
-  for (der($proc)) { print TMPp "$_\n" unless $STOP{$_}; }
-  close(TMPp);
-
-  my @res=();
-  for (`$agrep -h -i -w -f $tmp/_jspell$$ $file_list | head -$qt`) {
-    push(@res,$_);
-  }
-  unlink "$tmp/_jspell$$";
-  @res;
-}
-
-sub nlgrep2 {
-  my $proc=shift;
-  my $sep=shift;
-  my $file_list=join(' ',@_);
-  my $a;
-
-  open(TMPp,"> $tmp/_jspell$$") || die(" can't open tmp\n ");
-  for (der($proc)) { print TMPp "$_\n" unless $STOP{$_}; }
-  close(TMPp);
-
-  my @res=();
-  local $/=$sep;
-  open(TMPp,"$agrep -d '$sep' -h -i -w -f $tmp/_jspell$$ $file_list | ") or
-    die "cant agrep :-((";
-
-  while ($a=<TMPp>){
-    chomp($a);
-    push(@res,$a);
-  }
-  close(TMPp);
-  unlink "$tmp/_jspell$$";
-  @res;
-}
-
-# Esta funcao precisa de ser re-escrita para tirar partido dos
-# ficheiros .meta
-sub show_fea {
-  my $struct = shift;
-  for (keys %$struct) {
-
-    if (/^N$/) {
-      print "Number: ",(($struct->{$_} eq "p")?"plural":"singular"),"\n";
-      next;
-    }
-
-    if (/^G$/) {
-      print "Genre: ",(($struct->{$_} eq "m")?"masculine":"feminine"),"\n";
-      next;
-    }
-
-    if (/^CAT$/) {
-      my %significado = (
-			 nc => 'common name',
-			 adj => 'adjective',
-			 a_nc => 'common_name / adjective',
-			 adv => 'adverb',
-			 prep => 'preposition',
-			 in => '??',
-			 v => 'verb',
-			 pind => '??',
-			 con => '??',
-			 cp => '??',
-			);
-      print "Categorie: ",$significado{$struct->{$_}},"\n";
-      next;
-    }
-
-    print "$_ => $struct->{$_}\n";
-  }
-}

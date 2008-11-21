@@ -42,6 +42,10 @@ WriteMakefile(
     clean               => { FILES => "Lingua-Jspell-* src/*.o src/jbuild$EXE src/jspell$EXE _jdummy_" },
 );
 
+open MAKEFILE, ">>Makefile" or die "Cannot open file [Makefile] for writing\n";
+print MAKEFILE "\n\nprintprefix:\n\t\@ \$(ECHO) \$(SITEPREFIX)\n";
+close MAKEFILE;
+
 package MY; # so that "SUPER" works right
 
 our @jspell;
