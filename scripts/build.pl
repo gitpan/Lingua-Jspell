@@ -23,7 +23,7 @@ if (not Config::AutoConf->check_cc()) {
 print "Checking for a make command...";
 my $make = Config::AutoConf->check_progs("make","dmake","nmake");
 if (!$make) {
-	die "I need a ake program. Please install one!\n"
+	die "I need a make program. Please install one!\n"
 } else {
 	print " [found]\n"
 }
@@ -146,7 +146,7 @@ sub interpolate {
 sub get_prefix {
 	my $make_cmd = shift;
 	my $prefix = undef;
-	open PATH, "$make_cmd printprefix|" or die "Can't execute '$make_cmd printprefix'!\n";
+	open PATH, "-|", "$make_cmd -s printprefix" or die "Can't execute '$make_cmd printprefix'!\n";
 	chomp($prefix = <PATH>);
 	close PATH;
 	die "Could not find INSTALLSITEBIN variable on your Makefile.\n" unless $prefix;

@@ -1,5 +1,12 @@
 Revision history for Lingua-Jspell
 
+1.58 January 14, 2008
+	- fixed bug with build.pl under linux systems.
+
+1.57 November 21, 2008
+   - Rewritten the build.pl script to detect properly the installation
+     path (I hope).
+
 1.56 November 11, 2008
    - Added ujspell script to use jspell with unicode (-a and -l);
    - Corrected set_mode modes in the C library;
