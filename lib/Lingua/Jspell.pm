@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.58';
+our $VERSION = '1.59';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -313,27 +313,28 @@ sub der {
   my %res = ();
   my $command;
 
-  $command = sprintf("echo \"%s\"|$JSPELL -d $self->{dictionary} -e -o \"\" ",join("\n",@der));
-
   local $/ = "\n";
-
-  for (`$command`) {
-    chop;
+	open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
+	print WR join("\n",@der);
+	close WR;
+	while (<RD>) {
+		chomp;
     s/(=|, | $)//g;
     for(split) { $res{$_}++; }
-  }
+	}
+	close RD;
+	close ERROR;
 
   my $irrcomm;
-
-  # This need to be tested
   my $irr_file = _irr_file($self->{dictionary});
-  $irrcomm = sprintf("grep '^%s=' $irr_file",$w);
 
-  for (`$irrcomm`){
-    chop;
-    for (split(/[= ]+/,$_)) { $res{$_}++; }
-  }
-
+	open IRR, $irr_file or die "Can't find [$irr_file] file\n";
+	while (<IRR>) {
+		next unless /^$w=/;
+		chomp;
+		for (split(/[= ]+/,$_)) { $res{$_}++; }    
+	}
+	close IRR;
   return keys %res;
 }
 
