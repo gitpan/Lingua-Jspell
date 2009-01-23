@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.60 January 23, 2009
+	- fixed problem with windows and open2.
+
 1.59 January 22, 2009
 	- removed dependency for 'grep' and 'echo';
 

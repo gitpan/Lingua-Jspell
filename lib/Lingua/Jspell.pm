@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.59';
+our $VERSION = '1.60';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -308,24 +308,25 @@ Returns the list of all possible words using the word as radical.
 =cut
 
 sub der {
-  my ($self, $w) = @_;
-  my @der = $self->flags($w);
-  my %res = ();
-  my $command;
+	my ($self, $w) = @_;
+	my @der = $self->flags($w);
+	my %res = ();
+	my $command;
 
-  local $/ = "\n";
+	local $/ = "\n";
 	open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
-	print WR join("\n",@der);
+	print WR join("\n",@der),"\n";
+	print WR "\032" if ($^O =~ /win32/i);
 	close WR;
 	while (<RD>) {
 		chomp;
-    s/(=|, | $)//g;
-    for(split) { $res{$_}++; }
+		s/(=|, | $)//g;
+		for(split) { $res{$_}++; }
 	}
 	close RD;
 	close ERROR;
 
-  my $irrcomm;
+	  my $irrcomm;
   my $irr_file = _irr_file($self->{dictionary});
 
 	open IRR, $irr_file or die "Can't find [$irr_file] file\n";
