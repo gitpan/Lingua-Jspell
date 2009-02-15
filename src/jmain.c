@@ -10,7 +10,7 @@
 
 /* jmain.c
  *
- * Copyright 1994-2006
+ * Copyright 1994-2009
  *   Ulisses Pinto 
  *   José João Almeida
  *   Alberto Simões

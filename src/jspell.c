@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-file-style: "stroustrup" -*- */
+/* -*- Mode: C; tab-width: 4; -*- */
 
 /**
  * @file
@@ -9,7 +9,7 @@
  *
  * Copyright (c) 1983, by Pace Willisson
  * Copyright (c) 1992, 1993, Geoff Kuenning, Granada Hills, CA
- * Copyright (c) 1994-2006,
+ * Copyright (c) 1994-2009,
  *    Ulisses Pinto,
  *    José João Almeida,
  *    Alberto Simões,
@@ -457,18 +457,20 @@ static void option_M(char *cmd, int arglen)
 }
 
 /* p file: specify an alternate personal dictionary */
-static void option_p(char *LibDict, char *cpd, char *cmd, int argc, char *argv[])
+static void option_p(char *LibDict, char **cpd, char *cmd, int argc, char *argv[])
 {
-    cpd = (*argv)+2;
-    if (*cpd == '\0') {
-	argv++; argc--;
-	add_inc = 1;
-	if (argc == 0)
-	    usage(cmd);
-	cpd = *argv;
-	if (*cpd == '\0')
-	    cpd = NULL;
+	char *c;
+    c = (*argv)+2;
+    if (*c == '\0') {
+		argv++; argc--;
+		add_inc = 1;
+		if (argc == 0)
+		    usage(cmd);
+		c = *argv;
+		if (*c == '\0')
+		    c = NULL;
     }
+	*cpd = c;
     LibDict = NULL;
 }
 
@@ -479,23 +481,23 @@ static void option_d(char *LibDict, char *cpd, char *cmd, int argc, char *argv[]
 
     p = (*argv)+2;
     if (*p == '\0') {
-	argv++; argc--;
-	add_inc = 1;
-	if (argc == 0)
-	    usage(cmd);
-	p = *argv;
+		argv++; argc--;
+		add_inc = 1;
+		if (argc == 0)
+		    usage(cmd);
+		p = *argv;
     }
     if (index(p, '/') != NULL)
-	strcpy(hashname, p);
+		strcpy(hashname, p);
     else
-	sprintf(hashname, "%s/%s", LIBDIR, p);
+		sprintf(hashname, "%s/%s", LIBDIR, p);
     if (cpd == NULL  &&  *p != '\0')
-	LibDict = p;
+		LibDict = p;
     p = rindex(p, '.');
     if (p != NULL  &&  strcmp(p, ".hash") == 0)
-	*p = '\0';        /* Don't want ext. in LibDict */
+		*p = '\0';        /* Don't want ext. in LibDict */
     else
-	strcat(hashname, ".hash");
+		strcat(hashname, ".hash");
 }
 
 /* style to print characters not in the 7-bit ANSI character set */
@@ -602,7 +604,7 @@ static void process_LibDict(char *LibDict, char *cpd)
 {
 	char *p;
 	static char libdictname[sizeof DEFHASH];
-    
+
 	if (LibDict == NULL) {
 		strcpy(libdictname, DEFHASH);
 		LibDict = libdictname;
@@ -665,130 +667,130 @@ int my_main(int argc, char *argv[], char lib)
     argv++;
     argc--;
     while (argc && **argv == '-') {
-	/*
-	 * Trying to add a new flag?  Can't remember what's been used?
-	 * Here's a handy guide:
-	 *
-	 * Used:
-	 *        ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
-	 *        ^^^^       ^^^ ^  ^^ ^^
-	 *        abcdefghijklmnopqrstuvwxyz
-	 *        ^^^^^^*    ^^^*^  ^^*^^^*
-	 */
-	arglen = strlen(*argv);
-	add_inc = 0;
+		/*
+		 * Trying to add a new flag?  Can't remember what's been used?
+		 * Here's a handy guide:
+		 *
+		 * Used:
+		 *        ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+		 *        ^^^^       ^^^ ^  ^^ ^^
+		 *        abcdefghijklmnopqrstuvwxyz
+		 *        ^^^^^^*    ^^^*^  ^^*^^^*
+		 */
+		arglen = strlen(*argv);
+		add_inc = 0;
 	
-	switch ((*argv)[1]) {
-	case 'v':
-	    option_v(Cmd, argc, argv, arglen);
-	    break;
-	case 'n':
-	    preftype = option_n(Cmd, preftype, arglen);
-	    break;
-	case 't': /* TeX mode */
-	    preftype = option_t(Cmd, preftype, arglen);
-	    break;
-	case 'T': /* Set preferred file type */
-	    preftype = option_T(Cmd, argc, argv);
-	    break;
-	case 'A':
-	    option_A(Cmd, arglen);
-	    break;
-	case 'a':
-	    option_a(Cmd, arglen);
-	    break;
-	case 'D':
-	    option_D(Cmd, arglen);
-	    break;
-	case 'J':
-	    option_J(Cmd, arglen);
-	    break;
-	case 'e':
-	    option_e(Cmd, arglen, argv);
-	    break;
-	case 'c':
-	    option_c(Cmd, arglen, argv);
-	    break;
-	case 'b':
-	    option_b(Cmd, arglen);
-	    break;
-	case 'x':
-	    option_x(Cmd, arglen);
-	    break;
-	case 'f':
-	    option_f(Cmd, argc, argv); 
-	    break;
-	case 'L':
-	    option_L(Cmd, argc, argv);
-	    break;
-	case 'l':
-	    option_l(Cmd, arglen);
-	    break;
-	case 'S':
-	    option_S(Cmd, arglen);
-	    break;
-	case 'B':   /* -B: report missing blanks */
-	    option_B(Cmd, arglen);
-	    break;
-	case 'C':   /* -C: compound words are acceptable */
-	    option_C(Cmd, arglen);
-	    break;
-	case 'P':   /* -P: don't gen non-dict poss's */
-	    option_P(Cmd, arglen);
-	    break;
-	case 'm':   /* -m: make all poss affix combos*/
-	    option_m(Cmd, arglen);
-	    break;
-	case 'N':   /* -N:  suppress minimenu */
-	    option_N(Cmd, arglen);
-	    break;
-	case 'M':
-	    option_M(Cmd, arglen);
-	    break;   /* -M:  force minimenu */
-	case 'p':
-	    option_p(LibDict, cpd, Cmd, argc, argv);
-	    break;
-	case 'd':
-	    option_d(LibDict, cpd, Cmd, argc, argv);
-	    break;
-	case 'V':    /* Display 8-bit characters as M-xxx */
-	    option_V(Cmd, arglen);
-	    break;
-	case 'w':
-	    wchars = (*argv)+2;
-	    if (*wchars == '\0') {
-		argv++; argc--;
-		if (argc == 0)
+		switch ((*argv)[1]) {
+		case 'v':
+		    option_v(Cmd, argc, argv, arglen);
+		    break;
+		case 'n':
+		    preftype = option_n(Cmd, preftype, arglen);
+		    break;
+		case 't': /* TeX mode */
+		    preftype = option_t(Cmd, preftype, arglen);
+		    break;
+		case 'T': /* Set preferred file type */
+		    preftype = option_T(Cmd, argc, argv);
+		    break;
+		case 'A':
+		    option_A(Cmd, arglen);
+		    break;
+		case 'a':
+		    option_a(Cmd, arglen);
+		    break;
+		case 'D':
+		    option_D(Cmd, arglen);
+		    break;
+		case 'J':
+		    option_J(Cmd, arglen);
+		    break;
+		case 'e':
+		    option_e(Cmd, arglen, argv);
+		    break;
+		case 'c':
+		    option_c(Cmd, arglen, argv);
+		    break;
+		case 'b':
+		    option_b(Cmd, arglen);
+		    break;
+		case 'x':
+		    option_x(Cmd, arglen);
+		    break;
+		case 'f':
+		    option_f(Cmd, argc, argv); 
+		    break;
+		case 'L':
+		    option_L(Cmd, argc, argv);
+		    break;
+		case 'l':
+		    option_l(Cmd, arglen);
+		    break;
+		case 'S':
+		    option_S(Cmd, arglen);
+		    break;
+		case 'B':   /* -B: report missing blanks */
+		    option_B(Cmd, arglen);
+		    break;
+		case 'C':   /* -C: compound words are acceptable */
+		    option_C(Cmd, arglen);
+		    break;
+		case 'P':   /* -P: don't gen non-dict poss's */
+		    option_P(Cmd, arglen);
+		    break;
+		case 'm':   /* -m: make all poss affix combos*/
+		    option_m(Cmd, arglen);
+		    break;
+		case 'N':   /* -N:  suppress minimenu */
+		    option_N(Cmd, arglen);
+		    break;
+		case 'M':
+		    option_M(Cmd, arglen);
+		    break;   /* -M:  force minimenu */
+		case 'p':
+		    option_p(LibDict, &cpd, Cmd, argc, argv);
+		    break;
+		case 'd':
+		    option_d(LibDict, cpd, Cmd, argc, argv);
+		    break;
+		case 'V':    /* Display 8-bit characters as M-xxx */
+		    option_V(Cmd, arglen);
+		    break;
+		case 'w':
+		    wchars = (*argv)+2;
+		    if (*wchars == '\0') {
+				argv++; argc--;
+				if (argc == 0)
+				    usage(Cmd);
+				wchars = *argv;
+		    }
+		    break;
+		case 'W':
+		    option_W(Cmd, argc, argv);
+		    break;
+		case 'o':
+		    option_o(Cmd, argc, argv); 
+		    break;
+		case 'g':
+		    option_g(Cmd, arglen);
+		    break;
+		case 'u':
+		    option_u(Cmd, arglen);
+		    break;
+		case 'y':
+		    option_y(Cmd, arglen);
+		    break;
+		case 'z':
+		    option_z(Cmd, arglen);
+		    break;
+		default:
 		    usage(Cmd);
-		wchars = *argv;
-	    }
-	    break;
-	case 'W':
-	    option_W(Cmd, argc, argv);
-	    break;
-	case 'o':
-	    option_o(Cmd, argc, argv); 
-	    break;
-	case 'g':
-	    option_g(Cmd, arglen);
-	    break;
-	case 'u':
-	    option_u(Cmd, arglen);
-	    break;
-	case 'y':
-	    option_y(Cmd, arglen);
-	    break;
-	case 'z':
-	    option_z(Cmd, arglen);
-	    break;
-	default:
-	    usage(Cmd);
-	}  /* end switch */
+		}  /* end switch */
 	
-	if (add_inc) {
-	    argv++; argc--;
-	}
-	argv++; argc--;
+		if (add_inc) {
+		    argv++; argc--;
+		}
+		argv++; argc--;
     }
 
     if (!argc  &&  !lflag  &&  !aflag   &&  !eflag  &&  !dumpflag)
@@ -797,7 +799,7 @@ int my_main(int argc, char *argv[], char lib)
     verify_files(argc, argv);
 
     if (!oflag) strcpy(o_form, DEF_OUT);
-    if (linit() < 0) return 0;
+	if (linit() < 0) exit(1); /* Force an error */
 
     det_prefstringchar(preftype);
 
@@ -969,9 +971,9 @@ void dofile(char *filename)
     det_defdupchar(filename);
 
     if ((infile = fopen(filename, "r")) == NULL) {
-	fprintf(stderr, CANT_OPEN, filename);
-	sleep((unsigned) 2);
-	return;
+		fprintf(stderr, CANT_OPEN, filename);
+		sleep((unsigned) 2);
+		return;
     }
 
     det_readonly_access(filename);

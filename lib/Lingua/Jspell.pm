@@ -26,7 +26,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.60';
+our $VERSION = '1.61';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -95,7 +95,7 @@ sub new {
   my $meta_file = _meta_file($self->{dictionary});
   if (-f $meta_file) {
     open META, $meta_file or die $!;
-	binmode(META,":encoding(iso-8859-1)");
+		binmode(META,":encoding(iso-8859-1)");
     while(<META>) {
       next if m!^\s*$!;
       next if m!^\s*#!;
@@ -113,16 +113,17 @@ sub new {
   }
 
   $self->{pid} = open3($self->{DW},$self->{DR},$self->{DE},
-		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o\"%s!%s:%s:%s:%s\"") ||
-			 die "Cannot find 'jspell'";
+		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o\"%s!%s:%s:%s:%s\"") or die $!;
+		
   binmode($self->{DW},":encoding(iso-8859-1)");
   if ($^O ne "MSWin32") {
-	binmode($self->{DR},":encoding(iso-8859-1)");
+		binmode($self->{DR},":encoding(iso-8859-1)");
   } else {
-	binmode($self->{DR},":crlf:encoding(iso-8859-1)");
+		binmode($self->{DR},":crlf:encoding(iso-8859-1)");
   }
   $dr = $self->{DR};
   my $first_line = <$dr>;
+	die "Can't execute jspell with supplied dictionaries\n" unless $first_line =~ /International Jspell/;
 
   $self->{mode} ||= $MODE;
   my $dw = $self->{DW};
@@ -314,7 +315,7 @@ sub der {
 	my $command;
 
 	local $/ = "\n";
-	open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
+	my $pid = open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
 	print WR join("\n",@der),"\n";
 	print WR "\032" if ($^O =~ /win32/i);
 	close WR;
@@ -325,13 +326,14 @@ sub der {
 	}
 	close RD;
 	close ERROR;
-
-	  my $irrcomm;
+	waitpid $pid, 0;
+	
+  my $irrcomm;
   my $irr_file = _irr_file($self->{dictionary});
 
 	open IRR, $irr_file or die "Can't find [$irr_file] file\n";
 	while (<IRR>) {
-		next unless /^$w=/;
+		next unless /^\Q$w\E=/;
 		chomp;
 		for (split(/[= ]+/,$_)) { $res{$_}++; }    
 	}
@@ -507,7 +509,8 @@ sub _cat2small {
     # Nomes comuns:
     $b{'G'} = 'N' if $b{'G'} eq '_' || $b{'G'} eq '';
     $b{'N'} = 'N' if $b{'N'} eq '_' || $b{'N'} eq '';
-    return "\U$b{'CAT'}$b{'G'}$b{'N'}";
+		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
+    return "\U$b{'CAT'}$b{'G'}$b{'N'}$b{'GR'}";
 
   } elsif ($b{'CAT'} eq 'np') {
     # Nomes próprios:
@@ -520,20 +523,22 @@ sub _cat2small {
     $b{'G'} = 'N' if $b{'G'} eq '_';
     $b{'G'} = 'N' if $b{'G'} eq '2';
     $b{'N'} = 'N' if $b{'N'} eq '_';
+		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
     #    elsif ($b{'N'} eq ''){
     #      $b{'N'} = 'N';
     #    }
-    return "\UJ$b{'G'}$b{'N'}";
+    return "\UJ$b{'G'}$b{'N'}$b{'GR'}";
 
   } elsif ($b{'CAT'} eq 'a_nc') {
     # Adjectivos que podem funcionar como nomes comuns:
     $b{'G'} = 'N' if $b{'G'} eq '_';
     $b{'G'} = 'N' if $b{'G'} eq '2';
     $b{'N'} = 'N' if $b{'N'} eq '_';
+		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
     #    elsif ($b{'N'} eq ''){
     #      $b{'N'} = 'N';
     #    }
-    return "\UX$b{'G'}$b{'N'}";
+    return "\UX$b{'G'}$b{'N'}$b{'GR'}";
 
   } elsif ($b{'CAT'} eq 'v') {
     # Verbos:
