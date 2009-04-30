@@ -10,12 +10,13 @@ setlocale(LC_CTYPE, "pt_PT");
 use locale;
 
 use base 'Exporter';
-our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords ok any2str hash2str.);
-our %EXPORT_TAGS = (basic => [qw.onethat verif ok any2str hash2str.],
+our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords onethatverif any2str hash2str.);
+our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif any2str hash2str.],
                     greps => [qw.nlgrep setstopwords.]);
 
 use File::Which qw/which/;
 use IPC::Open3;
+use YAML::Any qw/LoadFile !Load !Dump/;
 
 
 =head1 NAME
@@ -26,7 +27,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.61';
+our $VERSION = '1.62';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -36,18 +37,16 @@ our %STOP =();
 BEGIN {
   my $EXE = "";
   $EXE=".exe" if $^O eq "MSWin32";
-#  my $BAT = "";
-#  $BAT=".bat" if $^O eq "MSWin32";
 
   # Search for jspell binary.
   $JSPELL = which("jspell");
   my $JSPELLDICT = which("jspell-dict");
   if (!$JSPELL) {
-	# check if we are running under make test
-	$JSPELL = "blib/script/jspell$EXE";
-	$JSPELLDICT = "blib/script/jspell-dict";
-	$JSPELL = undef unless -e $JSPELL;
-        die "jspell binary cannot be found!\n" unless $JSPELL;
+      # check if we are running under make test
+      $JSPELL = "blib/script/jspell$EXE";
+      $JSPELLDICT = "blib/script/jspell-dict";
+      $JSPELL = undef unless -e $JSPELL;
+      die "jspell binary cannot be found!\n" unless $JSPELL;
   }
   die "jspell binary cannot be found!\n" unless -e $JSPELL;
 
@@ -91,46 +90,40 @@ sub new {
   $pers = $self->{pdictionary}?"-p $self->{pdictionary}":"";
   $flag = defined($self->{'undef'})?$self->{'undef'}:"-y";
 
-  ## Get meta info
-  my $meta_file = _meta_file($self->{dictionary});
-  if (-f $meta_file) {
-    open META, $meta_file or die $!;
-		binmode(META,":encoding(iso-8859-1)");
-    while(<META>) {
-      next if m!^\s*$!;
-      next if m!^\s*#!;
-      s!#.*$!!;
-      if (m!^(\w+):\s*(.*)!) {
-        $self->{meta}{_}{$1} = $2;
-      }
-      if (m!^(\w+)=(\w+):\s*(.*)!) {
-        $self->{meta}{$1}{$2} = $3;
-      }
-    }
-    close META;
+  ## Get yaml info ----------------------------------
+  my $yaml_file = _yaml_file($self->{dictionary});
+  if (-f $yaml_file) {
+      $self->{yaml} = LoadFile($yaml_file);
   } else {
-    $self->{meta} = {};
+      $self->{yaml} = {};
   }
 
-  $self->{pid} = open3($self->{DW},$self->{DR},$self->{DE},
-		       "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o\"%s!%s:%s:%s:%s\"") or die $!;
+
+
+  my $js = "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o'%s!%s:%s:%s:%s'";
+  $self->{pid} = open3($self->{DW},$self->{DR},$self->{DE},$js) or die $!;
 		
   binmode($self->{DW},":encoding(iso-8859-1)");
   if ($^O ne "MSWin32") {
-		binmode($self->{DR},":encoding(iso-8859-1)");
-  } else {
-		binmode($self->{DR},":crlf:encoding(iso-8859-1)");
+      binmode($self->{DR},":encoding(iso-8859-1)");
+  }
+  else {
+      binmode($self->{DR},":crlf:encoding(iso-8859-1)");
   }
   $dr = $self->{DR};
   my $first_line = <$dr>;
-	die "Can't execute jspell with supplied dictionaries\n" unless $first_line =~ /International Jspell/;
+  die "Can't execute jspell with supplied dictionaries ($js)" unless $first_line && $first_line =~ /International Jspell/;
 
   $self->{mode} ||= $MODE;
   my $dw = $self->{DW};
   print $dw _mode($self->{mode});
 
-  if ($first_line  =~ /Jspell/) { return bless $self, $class }  #amen
-  else                          { return undef}
+  if ($first_line  =~ /Jspell/) {
+      return bless $self, $class # amen
+  }
+  else {
+      return undef
+  }
 }
 
 =head2 setmode
@@ -184,7 +177,7 @@ attribute value pairs. Attributes available: CAT, T, G, N, P, ....
 =cut
 
 
-sub fea{
+sub fea {
   my ($self,$w) = @_;
 
   local $/="\n";
@@ -209,9 +202,8 @@ sub fea{
       for(split(/[,;] /,$clas)){
         ($rad,$cla)= m{(.+?)\!:*(.*)$};
 
-	# Não sei porquê, mas acontece por vezes de $cla ser 'undef'
-	# Não sei bem o que devemos fazer... de momento, estou simplesmente
-	# a passar o código à frente.
+        # $cla undef quando nada preenchido...
+
 	if ($cla) {
 	  if ($cla =~ s/\/(.*)$//) { $flags = $1 }
 	  else                     { $flags = "" }
@@ -219,7 +211,7 @@ sub fea{
 	  $cla =~ s/:+$//g;
 	  $cla =~ s/:+/,/g;
 
-	  my %ana;
+	  my %ana =();
 	  my @attrs = split /,/, $cla;
 	  for (@attrs) {
 	    if (m!=!) {
@@ -240,6 +232,7 @@ sub fea{
 	    push(@r,+{"rad" => $rad, %ana});
 	  }
 	}
+        else {@r=( +{CAT=>"?",rad=>$rad} )}
       }
     }
   }
@@ -309,36 +302,37 @@ Returns the list of all possible words using the word as radical.
 =cut
 
 sub der {
-	my ($self, $w) = @_;
-	my @der = $self->flags($w);
-	my %res = ();
-	my $command;
+    my ($self, $w) = @_;
+    my @der = $self->flags($w);
+    my %res = ();
+    my $command;
 
-	local $/ = "\n";
-	my $pid = open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
-	print WR join("\n",@der),"\n";
-	print WR "\032" if ($^O =~ /win32/i);
-	close WR;
-	while (<RD>) {
-		chomp;
-		s/(=|, | $)//g;
-		for(split) { $res{$_}++; }
-	}
-	close RD;
-	close ERROR;
-	waitpid $pid, 0;
+    local $/ = "\n";
+    my $pid = open3(\*WR, \*RD, \*ERROR, "$JSPELL -d $self->{dictionary} -e -o \"\"") or die "Can't execute jspell.";
+    print WR join("\n",@der),"\n";
+    print WR "\032" if ($^O =~ /win32/i);
+    close WR;
+    while (<RD>) {
+        chomp;
+        s/(=|, | $)//g;
+        for(split) { $res{$_}++; }
+    }
+    close RD;
+    close ERROR;
+    waitpid $pid, 0;
 	
-  my $irrcomm;
-  my $irr_file = _irr_file($self->{dictionary});
+    my $irrcomm;
+    my $irr_file = _irr_file($self->{dictionary});
 
-	open IRR, $irr_file or die "Can't find [$irr_file] file\n";
-	while (<IRR>) {
-		next unless /^\Q$w\E=/;
-		chomp;
-		for (split(/[= ]+/,$_)) { $res{$_}++; }    
-	}
-	close IRR;
-  return keys %res;
+    if (open IRR, $irr_file) {
+        while (<IRR>) {
+            next unless /^\Q$w\E=/;
+            chomp;
+            for (split(/[= ]+/,$_)) { $res{$_}++; }
+        }
+        close IRR;
+    }
+    return keys %res;
 }
 
 =head2 onethat
@@ -353,16 +347,16 @@ verifies the Feature Structure Pattern used.
 =cut
 
 sub onethat {
-  my ($a, @b) = @_;
-  for (@b) {
-    return %$_ if verif($a,$_);
-  }
-  return () ;
+    my ($a, @b) = @_;
+    for (@b) {
+        return %$_ if verif($a,$_);
+    }
+    return () ;
 }
 
 =head2 verif
 
-Retuurns a true value if the second Feature Structure verifies the
+Returns a true value if the second Feature Structure verifies the
 first Feature Structure Pattern.
 
    if (verif( $pattern, $feature) )  { ... }
@@ -370,11 +364,11 @@ first Feature Structure Pattern.
 =cut
 
 sub verif {
-  my ($a, $b) = @_;
-  for (keys %$a) {
-    return 0 if (!defined($b->{$_}) || $a->{$_} ne $b->{$_}); 
-  }
-  return 1;
+    my ($a, $b) = @_;
+    for (keys %$a) {
+        return 0 if (!defined($b->{$_}) || $a->{$_} ne $b->{$_});
+    }
+    return 1;
 }
 
 =head2 nlgrep
@@ -398,12 +392,12 @@ sub nlgrep {
   my $p = shift;
 
   if(!ref($p) && $p =~ /[ ()*,]/){ 
-     $p = [map {/\w/ ? ($_):()} split(/[ ()*\|,]/,$a)];}
+     $p = [map {/\w/ ? ($_):()} split(/[\- ()*\|,]/,$a)];}
 
   my $p2 ;
 
   if(ref($p) eq "ARRAY"){
-    if($opt{radtxt}){ 
+    if($opt{radtxt}){
       my @pat =  @$p ;
       $p2 = sub{ my $x=shift; 
                  for(@pat){ return 0 unless $x =~ /\b(?:$_)\b/i;}
@@ -419,7 +413,7 @@ sub nlgrep {
   else {
     my $pattern = $opt{radtxt} ? $p : join("|",($p,$self->der($p)));
     $p2 = sub{ $_[0] =~ /\b(?:$pattern)\b/i };
-  } 
+  }
 
   my @file_list=@_;
   local $/=$opt{sep};
@@ -447,7 +441,7 @@ sub nlgrep {
 =cut
 
 sub setstopwords {
-  $STOP{$_} = 1 for @_;
+    $STOP{$_} = 1 for @_;
 }
 
 =head2 cat2small
@@ -459,6 +453,7 @@ Note: This function is specific for the Portuguese jspell dictionary
 # NOTA: Esta funcao é específica da língua TUGA!
 sub _cat2small {
   my %b = @_;
+  #  no warnings;
 
   if ($b{'CAT'} eq 'art') {
     # Artigos: o léxico já prevê todos...
@@ -654,6 +649,68 @@ sub _cat2small {
   }
 }
 
+=head2 new_featags
+
+=cut
+
+sub new_featags {
+    my ($self, $word) = @_;
+    if (exists($self->{yaml}{META}{TAG})) {
+        my $rules = $self->{yaml}{META}{TAG};
+        return map { $self->_compact($rules, $_) } $self->fea($word);
+    } else {
+        warn "Dictionary without a YAML file, or without rules for fea-compression\n";
+        return undef;
+    }
+}
+
+sub _compact {
+    my ($self,$rules, $fs) = @_;
+    my $tag;
+    if (ref($rules) eq "HASH") {
+        my ($key) = (%$rules);
+
+        if (exists($fs->{$key})) {
+            $tag = $self->_compact_id($key, $fs->{$key});
+            if (exists($rules->{$key}{$fs->{$key}})) {
+                $tag.$self->_compact($rules->{$key}{$fs->{$key}}, $fs);
+            }
+            elsif (exists($rules->{$key}{'-'})) {
+                $tag.$self->_compact($rules->{$key}{'-'}, $fs);
+            }
+            else {
+                $tag
+            }
+        }
+        else {
+            ""
+        }
+    }
+    elsif (ref($rules) eq "ARRAY") {
+        for my $cat (@$rules) {
+            $tag .= $self->_compact($cat, $fs);
+        }
+        $tag
+    }
+    elsif (!ref($rules)) {
+        if ($rules && exists($fs->{$rules})) {
+            $self->_compact_id($rules, $fs->{$rules})
+        } else {
+            ""
+        }
+    }
+}
+
+sub _compact_id {
+    my ($self, $cat, $id) = @_;
+    if (exists($self->{yaml}{"$cat-TAG"}{$id})) {
+        return $self->{yaml}{"$cat-TAG"}{$id}
+    } else {
+        return $id
+    }
+}
+
+
 =head2 featags
 
 Given a word, returns a set of analysis. Each analysis is a morphosintatic tag
@@ -686,16 +743,22 @@ sub featagsrad{
 }
 
 
-=head2 ok
+=head2 onethatverif
 
- # ok: cond:fs x ele:fs-set -> bool
- # exist x in ele : verif(cond , x)
+Given a pattern feature structure and a list of analysis (feature
+structures), returns a true value is there is one analysis that
+verifies the pattern.
 
- if(ok({CAT=>"adj"},$pt->fea("linda"))) { ... }
+ # onethatverif( cond:fs , conj:fs-set) :: bool
+ #     exists x in conj: verif(cond , x)
+
+ if(onethatverif({CAT=>"adj"},$pt->fea("linda"))) {
+    ...
+ }
 
 =cut
 
-sub ok {
+sub onethatverif {
   my ($a, @b) = @_;
   for (@b) {
     return 1 if verif($a,$_);
@@ -802,19 +865,19 @@ progress on your bug as I make changes.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007-2008 Projecto Natura
+Copyright 2007-2009 Projecto Natura
 
-This program is free software; licensed undef GPL.
+This program is free software; licensed under GPL.
 
 =cut
 
-sub _meta_file {
+sub _yaml_file {
   my $dic_file = shift;
   if ($dic_file =~ m!\.hash$!) {
     # we have a local dictionary
-    $dic_file =~ s/\.hash/.meta/;
+    $dic_file =~ s/\.hash/.yaml/;
   } else {
-    $dic_file = "$JSPELLLIB/$dic_file.meta"
+    $dic_file = "$JSPELLLIB/$dic_file.yaml"
   }
   return $dic_file;
 }

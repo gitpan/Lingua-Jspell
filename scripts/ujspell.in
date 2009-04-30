@@ -23,29 +23,30 @@ binmode($DW,":encoding(iso-8859-1)");
 binmode($DR,":encoding(iso-8859-1)");
 
 if ($encontrei_l) {
-	while (<STDIN>) {
-		print $DW $_;
-	}
-	close $DW;
-	while (<$DR>) {
-		print;
-	}
-} else {
-	my $x = <$DR>;
-	print $x;
-	while(<STDIN>) {
-		print $DW $_;
-		print_lines($DR);
-	}
-	close $_ for ($DW,$DR,$DE);	
+    while (<STDIN>) {
+        print $DW $_;
+    }
+    close $DW;
+    while (<$DR>) {
+        print;
+    }
+}
+else {
+    my $x = <$DR>;
+    print $x;
+    while(<STDIN>) {
+        print $DW $_;
+        print_lines($DR);
+    }
+    close $_ for ($DW, $DR, $DE);	
 }
 
 sub print_lines {
-	my $handler = shift;
-	my $l;
-	do {
-		$l = <$handler>;
-		chomp($l);
-		print "$l\n";
-	} while ($l ne "");
+    my $handler = shift;
+    my $l;
+    do {
+        $l = <$handler>;
+        chomp($l);
+        print "$l\n";
+    } while ($l ne "" && $l ne "*");
 }

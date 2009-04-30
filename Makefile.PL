@@ -10,39 +10,40 @@ use 5.008001;
 my $EXE = "";
 $EXE=".exe" if $^O eq "MSWin32";
 
-# die "OS unsupported" if $EXE eq ".exe";
-
-
-WriteMakefile(
-    NAME                => 'Lingua::Jspell',
-    AUTHOR              => 'Projecto Natura',
-    VERSION_FROM        => 'lib/Lingua/Jspell.pm',
-    ABSTRACT_FROM       => 'lib/Lingua/Jspell.pm',
-    PL_FILES            => {},
-    PREREQ_PM => {
-        'Config::AutoConf'   => 0.09,
-        'ExtUtils::CBuilder' => 0.23,
-        'File::Which'        => 0,
-        'Archive::Any'       => 0.0932,
-        'LWP::Simple'        => 0,
-        'Test::More'         => 0,
-        'IPC::Open2'         => 0,
-    },
-	EXE_FILES           => ["src/jspell$EXE",
-				"src/jbuild$EXE",
-				"scripts/jspell-dump",
-				"scripts/jspell-dict",
-				"scripts/ujspell"],
-	MAN1PODS            => {
-		'src/jspell.pod'      => 'blib/man1/jspell.1',
-		'src/jspellaff.pod'   => 'blib/man1/jspellaff.1',
-		'src/jbuild.pod'      => 'blib/man1/jbuild.1',
-		'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
-		'scripts/jspell-dump' => 'blib/man1/jspell-dump.1',
-	},
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => "Lingua-Jspell-* src/*.o src/jbuild$EXE src/jspell$EXE _jdummy_" },
+my %conf =
+  (
+   NAME                => 'Lingua::Jspell',
+   AUTHOR              => 'Projecto Natura',
+   VERSION_FROM        => 'lib/Lingua/Jspell.pm',
+   ABSTRACT_FROM       => 'lib/Lingua/Jspell.pm',
+   PL_FILES            => {},
+   PREREQ_PM => {
+                 'Config::AutoConf'   => '0.09',
+                 'ExtUtils::CBuilder' => '0.23',
+                 'File::Which'        => '0',
+                 'Archive::Any'       => '0.0932',
+                 'LWP::Simple'        => '0',
+                 'Test::More'         => '0',
+                 'IPC::Open2'         => '0',
+                 'YAML::Any'          => '0.67',
+                },
+   EXE_FILES => ["src/jspell$EXE",
+                 "src/jbuild$EXE",
+                 "scripts/jspell-dump",
+                 "scripts/jspell-dict",
+                 "scripts/ujspell"],
+   MAN1PODS  => {
+                 'src/jspell.pod'      => 'blib/man1/jspell.1',
+                 'src/jspellaff.pod'   => 'blib/man1/jspellaff.1',
+                 'src/jbuild.pod'      => 'blib/man1/jbuild.1',
+                 'scripts/jspell-dict' => 'blib/man1/jspell-dict.1',
+                 'scripts/jspell-dump' => 'blib/man1/jspell-dump.1',
+                },
+   dist      => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+   clean     => { FILES => "Lingua-Jspell-* src/*.o src/jbuild$EXE src/jspell$EXE _jdummy_" },
 );
+
+WriteMakefile( %conf );
 
 open MAKEFILE, ">>Makefile" or die "Cannot open file [Makefile] for writing\n";
 print MAKEFILE "\n\nprintprefix:\n\t\@ \$(ECHO) \$(SITEPREFIX)\n";

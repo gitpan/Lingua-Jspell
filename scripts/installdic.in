@@ -45,11 +45,11 @@ for my $dicurl (map { $baseurl.$_ } @$dics) {
     	mkpath($destpath);
 	
     	for (@files) {
-    	    if (m!\.(irr|meta|hash)$!) {
+    	    if (m!\.(irr|yaml|hash)$!) {
     	        $_ =~ s/$dir//;
         		my ($from, $to) = (catfile($dir,$_), catfile($destpath,$_));
         		print "Installing [$_] as [$to]\n";
-        		copy(catfile($dir,$_),catfile($destpath,$_));    	        
+        		copy(catfile($dir,$_),catfile($destpath,$_));
     	    }
     	}
     	unlink "dic.tar.gz";

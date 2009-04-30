@@ -1,11 +1,19 @@
 Revision history for Lingua-Jspell
 
+1.62 April 30, 2009
+   - handle correctly dictionaries that do not ship a .irr file
+   - bettered ujspell handle of single-letter analysis
+   - dictionaries .meta file are not longer supported
+   - .meta file replaced by .yaml file
+   - new YAML::Any dependency
+   - new analysis to tag conversion function (under tests)
+
 1.61 February 15, 2009
-   - Added jspell-dump script to dump all words and flexions for a
+   - added jspell-dump script to dump all words and flexions for a
      dictionary or list of words;
-   - Fixed problem with forks usage on der method;
-   - Fixed problem with jspell personal dictionaries;
-   - Make jspell complain when no dictionary can be opened.
+   - fixed problem with forks usage on der method;
+   - fixed problem with jspell personal dictionaries;
+   - make jspell complain when no dictionary can be opened.
 
 1.60 January 23, 2009
     - fixed problem with windows and open2.
@@ -17,36 +25,36 @@ Revision history for Lingua-Jspell
     - fixed bug with build.pl under linux systems.
 
 1.57 November 21, 2008
-   - Rewritten the build.pl script to detect properly the installation
+   - rewritten the build.pl script to detect properly the installation
      path (I hope).
 
 1.56 November 11, 2008
-   - Added ujspell script to use jspell with unicode (-a and -l);
+   - added ujspell script to use jspell with unicode (-a and -l);
    - Corrected set_mode modes in the C library;
 
 1.55    June 3, 2008
-    - Removed agrep source code and its dependency;
+    - removed agrep source code and its dependency;
     - Corrected dependencies on some modules;
 
 1.54    April 23, 2008
-    - Add code to check ncurses.h header file availability;
+    - add code to check ncurses.h header file availability;
     - a Jspell library is now built under Linux, MacOS and Windows;
       Unfortunately I couldn't test it yet. Things should get better
       in the next few days.
 
 1.53    April 22, 2008
-    - Fix problems with carriage return under Windows platforms;
-    - Fix problems with ' being used on command lines under Windows;
-    - Suggest the use of codepage 1252 under Windows for correct 
+    - fix problems with carriage return under Windows platforms;
+    - fix problems with ' being used on command lines under Windows;
+    - suggest the use of codepage 1252 under Windows for correct 
       latin1 display (chcp 1252), and the configuration of a True
       Type Font on the command prompt terminal.
 
 1.52    April 21, 2008
-    - Install both Portuguese and English dictionaries.
-    - Depend on ExtUtils::CBuilder 0.23, important for Windows OS. 
+    - install both Portuguese and English dictionaries.
+    - depend on ExtUtils::CBuilder 0.23, important for Windows OS. 
 
 1.51    April 21, 2008
-    - First release supporting Windows, but with a buggy Makefile.PL
+    - first release supporting Windows, but with a buggy Makefile.PL
 
 1.50    March 30, 2008
     - First stable release. Windows not supported yet.
