@@ -4,7 +4,9 @@ use 5.006;
 use strict;
 use warnings;
 use Data::Dumper;
-
+use File::Copy;
+use YAML::Any qw(LoadFile !Load !Dump);
+use File::Spec::Functions;
 use Lingua::Jspell;
 
 require Exporter;
@@ -15,44 +17,132 @@ our %EXPORT_TAGS = ( 'all' => [ qw() ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
-our @EXPORT = qw();
+our @EXPORT = qw( &toword &install_dic );
 
-our $VERSION = '0.01_1';
+our $VERSION = '0.01';
 
 # Preloaded methods go here.
+
+
+sub install_dic{
+  my %opt =(yaml => undef, name=>undef); ## irr => "name.irr"
+  if(ref($_[0]) eq "HASH") {%opt = (%opt , %{shift(@_)}) } ;
+  my ($aff,@dic)=@_;
+  my $cpaff=1;
+  if($aff =~ /^from:(.*)/){
+     $aff = catfile($Lingua::Jspell::JSPELLLIB,"$1.aff") ; $cpaff=0;}
+  my $ya;
+  open(F,">__$$.dic") or die("Error 1: $!\n");
+  for (@dic){open(G, $_) or die("Error 2($_): $!\n");
+      print F <G>;
+      close G;
+  }
+  close F;
+  $ya = LoadFile($opt{yaml}) if $opt{yaml};
+  my $name = $opt{name} || $ya->{META}{IDS}[0] || $dic[0];
+
+  if($opt{hash}){ copy($opt{hash}, "__$$.hash"); }
+  else { system ("jbuild __$$.dic $aff __$$.hash"); }
+
+  if($opt{irr}){
+    copy($opt{irr},catfile($Lingua::Jspell::JSPELLLIB,$opt{irr}))
+       or warn ("Error 3: $!");
+  }
+  copy("__$$.hash",catfile($Lingua::Jspell::JSPELLLIB,"$name.hash"))
+    or warn ("Error 4: $!");
+  if($cpaff){
+    copy($aff,       catfile($Lingua::Jspell::JSPELLLIB,"$name.aff"))
+       or warn ("Error 5: $!");
+  }
+  if ($opt{yaml}){
+     copy($opt{yaml},       catfile($Lingua::Jspell::JSPELLLIB,"$name.yaml"))
+       or warn ("Error 6: $!");
+     for(@{$ya->{META}{IDS}}){
+        copy("__$$.hash",catfile($Lingua::Jspell::JSPELLLIB,"$_.hash"))
+           or warn ("Error 7: $!");
+     }
+  }
+  unlink("__$$.dic","__$$.hash","__$$.dic.cnt","__$$.dic.stat");
+}
 
 sub init{
   my $file = shift;
   my $self = { filename => $file };
   open F, $file or die "Cannot open file '$file': $!\n";
   while(<F>) {
-    $self->{shortcut}{$1} = $2 if (m!^#([^/]+)/([^/]+)/!);
+    $self->{   shortcut}{$1} = $2 if (m!^#([^/]+)/([^/]+)/!);
+    $self->{revshortcut}{$2} = $1 if (m!^#([^/]+)/([^/]+)/!);
   }
   close F;
-
+  copy($file,"$file.old") or die("$! cant create $file.old\n");
   return bless($self);
 }
 
-sub foreach_word {
+sub toword{ _data2line(@_) }
+
+sub modeach_word{
+  my %opt =(rawfea => 0);
   my $dic = shift;
+  if(ref($_[0]) eq "HASH") {%opt = (%opt , %{shift(@_)}) } ;
+  my $func = shift;
+  open DIC, $dic->{filename} or die("cannot open file");
+  open NDIC, ">$dic->{filename}.new" or die("cannot create file $!");
+  while(<DIC>) {
+    if (m!^#! or m!^\s*$!){ print NDIC $_ ; next }
+
+    chomp;
+    my ($word,$class,$flags,@r) = split '/', $_;
+    my @flags = ($flags)?split(//, $flags):();
+    if(not $opt{rawfea}){
+      my @atts;
+      if ($class =~ /^\$/){ @atts = (special => $class)}
+      else {
+       $class =~ s/#([A-Za-z][A-Za-z0-9]*)/$dic->{shortcut}{$1} || ""/ge if $class;
+       @atts = ($class)?split(/[,=]/, $class):();
+      }
+      my %atts;
+      if (@atts % 2) {
+        %atts = ();
+      } else {
+        %atts = @atts;
+      }
+      print NDIC $func->($word,\%atts,\@flags,@r) || $_;
+    }
+    else {
+      print NDIC $func->($word,$class,\@flags,@r) || $_;
+    }
+    print NDIC "\n";
+  }
+  close DIC;
+  close NDIC;
+  copy("$dic->{filename}.new",$dic->{filename});
+}
+
+
+sub foreach_word {
+  my %opt =(type => "struct");
+  my $dic = shift;
+  if(ref($_[0]) eq "HASH") {%opt = (%opt , %{shift(@_)}) } ;
   my $func = shift;
   open DIC, $dic->{filename} or die("cannot open file");
   while(<DIC>) {
     next if m!^#!;
-    next if m!^/s*$!;
+    next if m!^\s*$!;
+    chomp;
+    my ($word,$class,$flags,@r) = split '/', $_;
+    if($opt{type} eq "struct"){
+      $class =~ s/#([A-Za-z][A-Za-z0-9]*)/$dic->{shortcut}{$1} || ""/ge if $class;
+      my @flags = ($flags)?split(//, $flags):();
+      my @atts = ($class)?split(/[,=]/, $class):();
+      my %atts;
+      if (@atts % 2) {
+        %atts = ();
+      } else {
+        %atts = @atts;
+      }
 
-    my ($word,$class,$flags) = split '/', $_;
-    $class =~ s/#([A-Za-z][A-Za-z0-9]*)/$dic->{shortcut}{$1} || ""/ge if $class;
-    my @flags = ($flags)?split(//, $flags):();
-    my @atts = ($class)?split(/[,=]/, $class):();
-    my %atts;
-    if (@atts % 2) {
-      %atts = ();
-    } else {
-      %atts = @atts;
-    }
-
-    &{$func}($word,\%atts,\@flags);
+      $func->($word,\%atts,\@flags,@r); }
+    elsif( $opt{type} eq "raw"){ $func->($_); }
   }
   close DIC;
 }
@@ -189,37 +279,42 @@ sub _same_cat {
 # Each element should be a reference to an associative array like this:
 #
 # { word => 'word', flags => 'zbr', CAT => 'np', G=>'f' }
-sub add_words {
+sub add_word {
 	my $dict = shift;
 
-	$dict->_same_catadd_full_line(map {
+	$dict->_add_full_line(map {
 				my $word = $_->{word};
 				my $flags = $_->{flags};
+				my $comment = $_->{comment} || "";
 				delete($_->{word});
 				delete($_->{flags});
+				delete($_->{comment});
 				my %hash = %$_;
 				my $info = join(",",map {"$_=$hash{$_}"} keys %hash);
-				"$word/$info/$flags"
+				"$word/$info/$flags/$comment"
 				 } @_);
 }
 
 sub _add_full_line {
 	my $dict = shift;
-	my @p = map {"$_\n"} @_;
+    my %saw =();
+    @saw{@_} = ();
 	my @v;
 
 	open DIC, $dict->{filename} or die("cannot open dictionary file");
 	open NDIC, ">$dict->{filename}.new" or die("cannot open new dictionary file");
 	while (<DIC>) {
 		push @v,$_ and next if (/^#/);
-		push @p,$_;
+        chomp;
+		$saw{$_} = 1;
 	}
 	
 	print NDIC join "", @v;
 	print NDIC "\n\n";
-	print NDIC sort grep /./, @p;
+	print NDIC map {/./ ? ("$_\n"):()} sort keys %saw;
 	close DIC;
 	close NDIC;
+    copy("$dict->{filename}.new",$dict->{filename});
 }
 
 sub delete_word {
@@ -236,6 +331,7 @@ sub delete_word {
 	}
 	close DIC;
 	close NDIC;
+    copy("$dict->{filename}.new",$dict->{filename});
 }
 
 sub add_flag {
@@ -269,9 +365,16 @@ sub add_flag {
 	#print "$a/$b/$c/$d\n";
 #}
 
-sub _data2line {
-  my ($word,$atts,$flags) = @_;
-  return "$word/".join(",",map { "$_=$atts->{$_}" } keys %$atts)."/".join("",grep {/./} @$flags)."/";
+sub _data2line { my ($word,$atts,$flags,@r) = @_;
+  if(ref $atts){
+     return "$word/". join(",",map { "$_=$atts->{$_}" } keys %$atts).
+                 "/". join("",grep {/./} @$flags).
+                 "/". join("/",@r);
+  } else {
+     return "$word/". $atts .
+                 "/". join("",grep {/./} @$flags).
+                 "/". join("/",@r);
+  }
 }
 
 
@@ -302,12 +405,42 @@ Lingua::Jspell::DictManager - a perl module for processing jspell dictionaries
 This function returns a new dictionary object to be used in future
 methods. It requires a string with the dictionary file name.
 
+=head2 C<install_dic>
+
+ install_dic({name=>"teste"} ,"t.aff", "t.dic")
+ install_dic({name=>"t"} ,"from:port", "t1.dic", "t2.dic")
+ install_dic({yaml=>"t.yaml"} ,"from:port", "t1.dic", "t2.dic")
+ install_dic({yaml=>"t.yaml",irr=>"f.irr"} ,"from:port", "t1.dic")
+
+C<from:lang> is used to reuse the affix table from language C<lang> (the
+file lang.aff is imported from the jspell library directory. (see jspell-dic
+-dir)
+
+  name  -- name of the dictionary
+  yaml  -- yaml file with metadata
+  irr   -- file with irregular terms
+
 =head2 C<foreach_word>
 
 This method processes all words from the dictionary using the function
 passed as argument. This function is called with three arguments: the
 word, a reference to an associative array with the category
 information and a reference to a list of rules identifiers.
+
+=head2 C<modeach_word>
+
+This method processes all words from the dictionary using the function
+passed as argument. This function is called with three arguments: the
+word, a reference to an associative array with the category
+information and a reference to a list of rules identifiers.
+
+If the option C<rawfea =>1> is selected, modeach_word receives a string 
+instead of a hash reference.
+
+ modeach_word({rawfea=>1}, sub { my($w,$cat,$flags,@com)=@_; ... })
+
+Use the function C<toword($word,$fea,$flag,$coms)> to rebuild a new value;
+if "" is return, the previous value is kept.
 
 =head2 C<for_this_cat_I_want_only_these_flags>
 
@@ -330,7 +463,9 @@ definition.
 This method tries to find redundant entries on the dictionary,
 producing an ouput file to be executed and delete the redundancy.
 
-=head2 C<add_words>
+=head2 C<add_word>
+
+Add (one or more) word to the dictionary
 
  $dict->add_word({word=>'word',flags=>'zbr',CAT=>'np',G=>'f'},...)
 
@@ -341,6 +476,11 @@ Deletes the word passed as argument.
 =head2 C<add_flag>
 
 Adds the flags in the first argument to all words passed.
+
+=head2 C<toword>
+
+to format Word, features, flags and commants to jspell-dict format.
+This functions is tically used em C<modeach_word>.
 
 =head1 AUTHOR
 

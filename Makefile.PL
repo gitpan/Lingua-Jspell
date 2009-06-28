@@ -27,6 +27,7 @@ my %conf =
                  'IPC::Open2'         => '0',
                  'YAML::Any'          => '0.67',
                 },
+   PM_FILTER => '$(PERL) scripts/changePrefix $(SITEPREFIX)',
    EXE_FILES => ["src/jspell$EXE",
                  "src/jbuild$EXE",
                  "scripts/jspell-dump",
@@ -55,14 +56,14 @@ our @jspell;
 our @scripts;
 
 BEGIN {
-	## Construct dependencies lists automagically
-	open M, "MANIFEST" or die "Weirdo. I can't read MANIFEST!";
-	while (<M>) {
-		chomp;
-		push @jspell, $_ if /^src.*[ch]$/;
-		push @scripts, $_ if /^scripts.*in$/;
-	}
-	close M;
+    ## Construct dependencies lists automagically
+    open M, "MANIFEST" or die "Weirdo. I can't read MANIFEST!";
+    while (<M>) {
+        chomp;
+        push @jspell, $_ if /^src.*[ch]$/;
+        push @scripts, $_ if /^scripts.*in$/;
+    }
+    close M;
 }
 
 sub install {

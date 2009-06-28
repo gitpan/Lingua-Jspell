@@ -79,7 +79,7 @@ interpolate('jspell.pc.in','jspell.pc',%c_config);
 
 # prepare a C compiler
 my $cc = ExtUtils::CBuilder->new(quiet => 0);
-
+$cc->{config}{lddlflags} =~ s/-bundle/-dynamiclib/;
 
 ### JSpell
 print "\nCompiling Jspell.\n";

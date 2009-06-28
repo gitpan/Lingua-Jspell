@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $path = shift;
+
+while(<STDIN>) {
+    s/\[% PREFIX %\]/$path/g;
+    print;
+}

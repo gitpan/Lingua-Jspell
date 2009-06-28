@@ -1,5 +1,10 @@
 Revision history for Lingua-Jspell
 
+1.63 June 28, 2009
+   - Major changes on Lingua::Jspell::DictManager (v. 0.01 released);
+   - ':basic' and ':greps' export namespaces;
+   - better handling of jspell-dict (now with basic installation mechanisms)
+
 1.62 April 30, 2009
    - handle correctly dictionaries that do not ship a .irr file
    - bettered ujspell handle of single-letter analysis

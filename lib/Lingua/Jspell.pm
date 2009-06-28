@@ -10,10 +10,12 @@ setlocale(LC_CTYPE, "pt_PT");
 use locale;
 
 use base 'Exporter';
-our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords onethatverif any2str hash2str.);
-our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif any2str hash2str.],
+our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords onethatverif any2str
+       hash2str isguess.);
+our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif any2str hash2str
+       isguess.],
                     greps => [qw.nlgrep setstopwords.]);
-
+use File::Spec::Functions;
 use File::Which qw/which/;
 use IPC::Open3;
 use YAML::Any qw/LoadFile !Load !Dump/;
@@ -27,7 +29,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.62';
+our $VERSION = '1.63';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -39,18 +41,17 @@ BEGIN {
   $EXE=".exe" if $^O eq "MSWin32";
 
   # Search for jspell binary.
+  my $JSPELL_PREFIX = '[% PREFIX %]';
   $JSPELL = which("jspell");
-  my $JSPELLDICT = which("jspell-dict");
   if (!$JSPELL) {
       # check if we are running under make test
-      $JSPELL = "blib/script/jspell$EXE";
-      $JSPELLDICT = "blib/script/jspell-dict";
+      $JSPELL = catfile("blib","script","jspell$EXE");
       $JSPELL = undef unless -e $JSPELL;
       die "jspell binary cannot be found!\n" unless $JSPELL;
   }
   die "jspell binary cannot be found!\n" unless -e $JSPELL;
 
-  chomp($JSPELLLIB = `$JSPELLDICT --dic-dir`);
+  $JSPELLLIB = catfile($JSPELL_PREFIX, "lib", "jspell");
 }
 
 =head1 SYNOPSIS
@@ -134,18 +135,24 @@ sub new {
 
 =item af
 
-Enable near misses, don't use rules where they are not applied, do not
-give suggestions by swapping adjacent letters on the original word.
+(add flags)
+Enable parcial near misses, 
+by using rules not officially associated with the current word. 
+Does not give suggestions by changing letters on the original word.
+(default option)
 
 =item full
 
+(add flags and change characters)
 Enable near misses, try to use rules where they are not applied, try 
 to give suggestions by swapping adjacent letters on the original word.
 
 =item cc
 
-Enable near misses, don't use rules where they are not applied, try 
-to give suggestions by swapping adjacent letters on the original word.
+(change characters)
+Enable parcial near misses, 
+by swapping adjacent, inserting or modifying letters on the original word.
+Does not use rules not associated with the current word. 
 
 =item off
 
@@ -173,12 +180,16 @@ Returns a list of analisys of a word. Each analisys is a list of
 attribute value pairs. Attributes available: CAT, T, G, N, P, ....
 
   @l = $dic->fea($word)
+  @l = $dic->fea($word,{...att. value pair restriction})
+
+If a restriction is provided, just the analisys that verify 
+it are returned.
 
 =cut
 
 
 sub fea {
-  my ($self,$w) = @_;
+  my ($self,$w,$res) = @_;
 
   local $/="\n";
 
@@ -236,7 +247,8 @@ sub fea {
       }
     }
   }
-  return @r;
+  if($res){  return (grep { verif($res,$_) } @r) }
+  else    {  return @r; }
 }
 
 =head2 flags
@@ -340,9 +352,9 @@ sub der {
 Returns the first Feature Structure from the supplied list that
 verifies the Feature Structure Pattern used.
 
-   $analysis = onethat( { CAT=>'adj' }, @features);
+  %analysis = onethat( { CAT=>'adj' }, @features);
 
-   $analysis = onethat( { CAT=>'adj' }, $pt->fea("espanhol"));
+  %analysis = onethat( { CAT=>'adj' }, $pt->fea("espanhol"));
 
 =cut
 
@@ -786,6 +798,20 @@ sub mkradtxt {
   close F2;
 }
 
+=head2 isguess
+
+ Lingua::Jspell::isguess(@ana)
+
+returns True if list of analisys are near 
+misses (unknown attribut is 1).
+
+=cut
+
+sub isguess{
+ my @a=@_;
+ return @a &&  $a[0]{unknown}; 
+}
+
 =head2 any2str
 
  Lingua::Jspell::any2str($ref)
@@ -797,7 +823,9 @@ sub mkradtxt {
 sub any2str {
   my ($r, $i) = @_;
   $i ||= 0;
-  if ($i eq "compact") {
+  if (not $r) {return ""}
+  if (ref $i) { any2str([@_]);}
+  elsif ($i eq "compact") {
     if (ref($r) eq "HASH") {
       return "{". hash2str($r,$i) . "}"
     } elsif (ref($r) eq "ARRAY") {
@@ -886,13 +914,13 @@ sub _mode {
   my $m = shift;
   my $r="";
   if ($m->{nm}) {
-    if ($m->{nm} eq "af")
-      { $r .= "\$G\n\$P\n\$y\n" }
-    elsif ($m->{nm} eq "full")
+    if ($m->{nm} eq "af")              ### af = GPy --> Gym
+      { $r .= "\$G\n\$m\n\$y\n" }  
+    elsif ($m->{nm} eq "full")         ### full = GYm
       { $r .= "\$G\n\$Y\n\$m\n" }
-    elsif ($m->{nm} eq "cc")
+    elsif ($m->{nm} eq "cc")           ### cc = GPY
       { $r .= "\$G\n\$P\n\$Y\n" }
-    elsif ($m->{nm} eq "off")
+    elsif ($m->{nm} eq "off")          ### off = gPy
       { $r .= "\$g\n\$P\n\$y\n" }
     else {}
   }
