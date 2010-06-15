@@ -16,7 +16,7 @@ binmode(STDIN,":utf8");
 binmode(STDOUT,":utf8");
 
 my ($DW,$DR,$DE);
-my $exe = catfile("[% PREFIX %]","bin","jspell");
+my $exe = catfile('[% BINDIR %]',"jspell");
 open3($DW,$DR,$DE,$exe,@ARGV);
 
 binmode($DW,":encoding(iso-8859-1)");
@@ -38,7 +38,7 @@ else {
         print $DW $_;
         print_lines($DR);
     }
-    close $_ for ($DW, $DR, $DE);	
+    for ($DW, $DR, $DE) { $_ and close $_ };	
 }
 
 sub print_lines {
@@ -50,3 +50,4 @@ sub print_lines {
         print "$l\n";
     } while ($l ne "" && $l ne "*");
 }
+

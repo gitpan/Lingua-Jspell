@@ -138,7 +138,7 @@ static void option_v(char *cmd, int argc, char *argv[], int arglen)
     if ((*argv)[2] == 'v') {
 	printf(ISPELL_C_OPTIONS_ARE);
 	printf("\tBAKEXT = \"%s\"\n", BAKEXT);
-	printf("\tBINDIR = \"%s\"\n", BINDIR);
+/*	printf("\tBINDIR = \"%s\"\n", BINDIR); */
 #ifdef BOTTOMCONTEXT
 	printf("\tBOTTOMCONTEXT\n");
 #else /* BOTTOMCONTEXT */
@@ -179,15 +179,15 @@ static void option_v(char *cmd, int argc, char *argv[], int arglen)
 	printf("\tINCSTRVAR = \"%s\"\n", INCSTRVAR);
 	printf("\tINPUTWORDLEN = %d\n", INPUTWORDLEN);
 	printf("\tLANGUAGES = \"%s\"\n", LANGUAGES);
-	printf("\tLIBDIR = \"%s\"\n", LIBDIR);
+	printf("\tLIBDIR = \"%s\"\n", LIBDIR); 
 #ifndef REGEX_LOOKUP
 #endif /* REGEX_LOOKUP */
 	printf("\tMAKE_SORTTMP = \"%s\"\n", MAKE_SORTTMP);
 	printf("\tMALLOC_INCREMENT = %d\n", MALLOC_INCREMENT);
-	printf("\tMAN1DIR = \"%s\"\n", MAN1DIR);
-	printf("\tMAN1EXT = \"%s\"\n", MAN1EXT);
-	printf("\tMAN4DIR = \"%s\"\n", MAN4DIR);
-	printf("\tMAN4EXT = \"%s\"\n", MAN4EXT);
+	/* printf("\tMAN1DIR = \"%s\"\n", MAN1DIR); */
+	/* printf("\tMAN1EXT = \"%s\"\n", MAN1EXT); */
+	/* printf("\tMAN4DIR = \"%s\"\n", MAN4DIR); */
+	/* printf("\tMAN4EXT = \"%s\"\n", MAN4EXT); */
 	printf("\tMASKBITS = %d\n", MASKBITS);
 	printf("\tMASKTYPE = %s\n", MASKTYPE_STRING);
 	printf("\tMASKTYPE_WIDTH = %d\n", MASKTYPE_WIDTH);

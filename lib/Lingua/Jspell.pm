@@ -10,11 +10,13 @@ setlocale(LC_CTYPE, "pt_PT");
 use locale;
 
 use base 'Exporter';
-our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords onethatverif any2str
-       hash2str isguess.);
-our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif any2str hash2str
-       isguess.],
+our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords
+                     onethatverif any2str hash2str isguess.);
+
+our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif
+                                 any2str hash2str isguess.],
                     greps => [qw.nlgrep setstopwords.]);
+
 use File::Spec::Functions;
 use File::Which qw/which/;
 use IPC::Open3;
@@ -29,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.63';
+our $VERSION = '1.65';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -37,21 +39,21 @@ our $DELIM = '===';
 our %STOP =();
 
 BEGIN {
-  my $EXE = "";
-  $EXE=".exe" if $^O eq "MSWin32";
+    my $EXE = "";
+    $EXE=".exe" if $^O eq "MSWin32";
 
-  # Search for jspell binary.
-  my $JSPELL_PREFIX = '[% PREFIX %]';
-  $JSPELL = which("jspell");
-  if (!$JSPELL) {
-      # check if we are running under make test
-      $JSPELL = catfile("blib","script","jspell$EXE");
-      $JSPELL = undef unless -e $JSPELL;
-      die "jspell binary cannot be found!\n" unless $JSPELL;
-  }
-  die "jspell binary cannot be found!\n" unless -e $JSPELL;
+    # Search for jspell binary.
+    my $JSPELL_PREFIX = '[% PREFIX %]';
+    $JSPELL = which("jspell$EXE");
+    if (!$JSPELL) {
+        # check if we are running under make test
+        $JSPELL = catfile("blib","bin","jspell$EXE");
+        $JSPELL = undef unless -e $JSPELL;
+        die "jspell binary cannot be found!\n" unless $JSPELL;
+    }
+    die "jspell binary cannot be found!\n" unless -e $JSPELL;
 
-  $JSPELLLIB = catfile($JSPELL_PREFIX, "lib", "jspell");
+    $JSPELLLIB = catfile($JSPELL_PREFIX, "lib", "jspell");
 }
 
 =head1 SYNOPSIS
@@ -915,7 +917,7 @@ sub _mode {
   my $r="";
   if ($m->{nm}) {
     if ($m->{nm} eq "af")              ### af = GPy --> Gym
-      { $r .= "\$G\n\$m\n\$y\n" }  
+      { $r .= "\$G\n\$m\n\$y\n" }
     elsif ($m->{nm} eq "full")         ### full = GYm
       { $r .= "\$G\n\$Y\n\$m\n" }
     elsif ($m->{nm} eq "cc")           ### cc = GPY

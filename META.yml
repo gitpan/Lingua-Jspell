@@ -1,29 +1,36 @@
---- #YAML:1.0
-name:               Lingua-Jspell
-version:            1.63
-abstract:           Perl interface to the Jspell morphological analyser.
+---
+abstract: 'Perl interface to the Jspell morphological analyser.'
 author:
-    - Projecto Natura
-license:            unknown
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+  - 'Alberto Simões <ambs@cpan.org>'
+  - "José João Almeida <jj@di.uminho.pt\">"
+  - 'Ulisses Pinto'
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Archive::Any:        0.0932
-    Config::AutoConf:    0.09
-    ExtUtils::CBuilder:  0.23
-    File::Which:         0
-    IPC::Open2:          0
-    LWP::Simple:         0
-    Test::More:          0
-    YAML::Any:           0.67
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.52
+  Archive::Any: 0.0932
+  Config::AutoConf: 0.14
+  ExtUtils::CBuilder: 0.27
+  ExtUtils::Manifest: 0
+  File::Copy: 0
+  File::Which: 0
+  IPC::Open2: 0
+  LWP::Simple: 0
+  Module::Build: 0.3603
+  Test::More: 0
+  YAML::Any: 0.67
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3607'
+license: perl
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Lingua-Jspell
+provides:
+  Lingua::Jspell:
+    file: lib/Lingua/Jspell.pm
+    version: 1.65
+  Lingua::Jspell::DictManager:
+    file: lib/Lingua/Jspell/DictManager.pm
+    version: 0.01
+resources:
+  license: http://dev.perl.org/licenses/
+version: 1.65

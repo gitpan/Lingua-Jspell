@@ -1,13 +1,6 @@
-prefix=[% PREFIX %]
-exec_prefix=${prefix}/bin
-libdir=${prefix}/lib
-# includedir=@includedir@/numexp
-# idldir=${prefix}/share/idl
+exec_prefix=[% EXECPREFIX %]
+libdir=[% LIBDIR %]
 
 Name: Jspell
 Description: Morphological analyser
 Version: [% VERSION %]
-Requires: 
-# Libs: -L${libdir} -ljspell
-# Cflags: -I${includedir}
-

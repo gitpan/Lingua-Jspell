@@ -5,28 +5,34 @@
 #define sleep(x) Sleep((x)*1000)
 #endif
 
+#define VERSION "[% VERSION %]"
+
 #include <sys/param.h>
 #include <sys/types.h>
 
 /*
 ****** instalation directories ******
 */
-#ifndef BINDIR
-#define BINDIR        "[% PREFIX %]/bin"
-#endif
-#ifndef INDDIR
-#define INDDIR        "[% PREFIX %]/include"
-#endif
+/** 
+  #i fndef BINDIR
+  #d efine BINDIR        " PREFIX %]/bin"
+  #e ndif
+  #i fndef INDDIR
+  #d efine INDDIR        " PREFIX %]/include"
+  #e ndif
+*/
 #ifndef LIBDIR
-#define LIBDIR        "[% PREFIX %]/lib/jspell"
+#define LIBDIR        "[% LIBDIR %]/jspell"
 #endif
-#ifndef MAN1DIR
-#define MAN1DIR        "[% PREFIX %]/man/man1"
-#endif
-#ifndef MAN4DIR
-#define MAN4DIR        "[% PREFIX %]/man/man4"
-#endif
-
+/*
+  #i fndef MAN1DIR
+  #d efine MAN1DIR        " PREFIX %]/man/man1"
+  #e ndif
+  #i fndef MAN4DIR
+  #d efine MAN4DIR        " PREFIX %]/man/man4"
+  #e ndif
+*/
+  
 /*
 ** Extensions to put on manual pages.  Usually these are ".1" or ".1l".
 */

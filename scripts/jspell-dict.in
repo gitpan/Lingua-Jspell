@@ -8,58 +8,65 @@ use File::Basename;
 use File::Spec::Functions;
 use Lingua::Jspell::DictManager;
 
-my $libdir = catfile("[% PREFIX %]","lib","jspell");
+my $libdir = catfile('[% LIBDIR %]',"jspell");
 
 my ($exists, $listall, $dicdir, $name, $mkname);
-my $result = GetOptions("list-dics" => \$listall,
-	 			"gen-yaml=s" => \$mkname,
-				"install=s" => \$name,
-				"dic-dir" => \$dicdir,
-				"installed=s" => \$exists);
+my $result = GetOptions("list-dics"   => \$listall,
+                        "gen-yaml=s"  => \$mkname,
+                        "install=s"   => \$name,
+                        "dic-dir"     => \$dicdir,
+                        "installed=s" => \$exists);
 
 my @dics = map { basename($_) } <$libdir/*hash>;
 
 if ($dicdir) {
-  print "$libdir\n";
+    print "$libdir\n";
 }
 
 elsif ($listall) {
-  if (@dics) {
-    print(map "$_\n", @dics);
-  }
+    if (@dics) {
+        print (map "$_\n", @dics);
+    }
 }
 
 elsif ($exists) {
-  if (grep {$_ eq "$exists.hash"} @dics) {
-    print "yes\n";
-  } else {
-    print "no\n";
-    exit(1);
-  }
+    if (grep {$_ eq "$exists.hash"} @dics) {
+        print "yes\n";
+    } else {
+        print "no\n";
+        exit(1);
+    }
 }
-elsif($name) {
-## install_yaml_dic("$name.yaml") if -f "$name.yaml";
-  my @file = @ARGV;
-  my @dic =();
-  my @y=(name=>$name);
-  my $aff = "";
-  my $hash ="";
-  for(@ARGV){
-    push(@dic,$_) if /\.dic$/;
-    $hash = $_ if /\.hash$/;
-    $aff = $_ if /\.dic$/ || /from:/;
-  }
-  if (-f "$name.yaml")            { push(@y , yaml => "$name.yaml");  }
-  if (-f "$name.irr")             { push(@y , irr  => "$name.irr" );  }
-  if ($hash)                      { push(@y , hash =>  $hash      );  }
-  if (not @dic and -f "name.dic") { push(@dic ,"name.dic"); }
-  if (not $aff and -f "name.$aff"){ $aff = "$name.aff"; }
 
-  install_dic({@y},$aff, @dic) 
+elsif ($name) {
+    ## install_yaml_dic("$name.yaml") if -f "$name.yaml";
+    my @file = @ARGV;
+    my @dic  = ();
+    my @y = (name => $name);
+
+    my $aff = "";
+    my $hash ="";
+
+    for(@ARGV){
+        push @dic, $_ if /\.dic$/;
+        $hash = $_    if /\.hash$/;
+        $aff  = $_    if /\.dic$/    || /from:/;
+    }
+    if (-f "$name.yaml")             { push @y , yaml => "$name.yaml";  }
+    if (-f "$name.irr")              { push @y , irr  => "$name.irr" ;  }
+    if ($hash)                       { push @y , hash =>  $hash      ;  }
+    if (not @dic and -f "name.dic")  { push @dic ,"name.dic"         ;  }
+    if (not $aff and -f "name.$aff") { $aff = "$name.aff"            ;  }
+
+    # Mais cedo ou mais tarde o install_dic deve retornar 0 ou 1...
+    exit (install_dic( {@y}, $aff, @dic));
 }
-elsif($mkname) {
-  if(-f "$mkname.yaml") { die "$mkname.yaml' already exists\n"}
-  else { open(F,">$mkname.yaml") or die("Error: $!\n");
+
+elsif ($mkname) {
+
+    die "'$mkname.yaml' already exists\n" if -f "$mkname.yaml";
+
+    open F, ">$mkname.yaml" or die "Error: $!\n";
     print F qq{
 META:
  IDS: [$mkname]
@@ -78,13 +85,14 @@ META:
      '-': [C, G, P, N]
  PROPS:
 };
-     close F;
-    }
+    close F;
 }
 
 else {
-  print " jspell-dict [-list-dics] | [-dic-dir] 
-                    | [-installed <dict>] | -gen-yaml f.yaml
+    print " jspell-dict [-list-dics]
+                        [-dic-dir]
+                        [-installed <dict>]
+                        [-gen-yaml f.yaml]
 \n";
 }
 
@@ -100,7 +108,7 @@ jspell-dict - Command line tool to manage Jspell dictionaries
 
   jspell-dict -installed
 
-  jspell-dict -gen-yaml name     (make name.yaml)
+  jspell-dict -gen-yaml name     # make name.yaml
 
 
 =head1 DESCRIPTION
@@ -147,7 +155,7 @@ Alberto Manuel Brandão Simões, E<lt>ambs@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007-2008 by Projecto Natura
+Copyright (C) 2007-2010 by Projecto Natura
 
 =cut
 

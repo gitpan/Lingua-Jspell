@@ -1,5 +1,13 @@
 Revision history for Lingua-Jspell
 
+1.65 June 15, 2010
+   - After one year, a bump of 0.02 in the version, as this is a relevant release.
+   - Create libjspell library in all 3 major platforms
+   - Link jspell and jbuild with libjspell
+   - Refactored jspell-installdic script to install automatically jspell dictionaries
+   - Refactored build system to use Module::Build
+   - Sure new bugs should be added :-|
+
 1.63 June 28, 2009
    - Major changes on Lingua::Jspell::DictManager (v. 0.01 released);
    - ':basic' and ':greps' export namespaces;

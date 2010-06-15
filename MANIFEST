@@ -1,6 +1,7 @@
 Changes
 MANIFEST
-Makefile.PL
+Build.PL
+inc/MyBuilder.pm
 TODO
 README
 jspell.pc.in
@@ -12,12 +13,11 @@ t/00.load.t
 t/pod-coverage.t
 t/pod.t
 
-scripts/build.pl
-scripts/installdic.in
+scripts/jspell-installdic.in
 scripts/jspell-dict.in
-scripts/jspell-dump
 scripts/ujspell.in
 scripts/jspellfea
+scripts/jspell-dump
 
 src/correct.c
 src/defmt.c
@@ -55,6 +55,7 @@ src/y.tab.c
 
 examples/ex1
 examples/microdic
+examples/C/simple.c
 
-scripts/changePrefix
-META.yml                                 Module meta-data (added by MakeMaker)
+META.yml
+jspell-dist.pod
