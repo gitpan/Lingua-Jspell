@@ -22,6 +22,7 @@ my $builder = MyBuilder->new
                       'Module::Build'      => '0.3603',
                       'File::Which'        => '0',
                       'Archive::Any'       => '0.0932',
+                      'Data::Compare'      => '1.22',
                       'LWP::Simple'        => '0',
                       'Test::More'         => '0',
                       'IPC::Open2'         => '0',

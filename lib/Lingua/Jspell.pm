@@ -16,12 +16,12 @@ our @EXPORT_OK = (qw.onethat verif nlgrep setstopwords
 our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif
                                  any2str hash2str isguess.],
                     greps => [qw.nlgrep setstopwords.]);
-
+# use Data::Dumper;
 use File::Spec::Functions;
 use File::Which qw/which/;
 use IPC::Open3;
 use YAML::Any qw/LoadFile !Load !Dump/;
-
+use Data::Compare;
 
 =head1 NAME
 
@@ -31,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.65';
+our $VERSION = '1.66';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -43,7 +43,8 @@ BEGIN {
     $EXE=".exe" if $^O eq "MSWin32";
 
     # Search for jspell binary.
-    my $JSPELL_PREFIX = '[% PREFIX %]';
+    # LIBDIR = "/opt/local/lib/jspell"
+
     $JSPELL = which("jspell$EXE");
     if (!$JSPELL) {
         # check if we are running under make test
@@ -53,7 +54,14 @@ BEGIN {
     }
     die "jspell binary cannot be found!\n" unless -e $JSPELL;
 
-    $JSPELLLIB = catfile($JSPELL_PREFIX, "lib", "jspell");
+    open X, "$JSPELL -vv|" or die "Can't execute $JSPELL";
+    while (<X>) {
+        if (/LIBDIR = "([^"]+)"/) {
+            $JSPELLLIB = $1;
+        }
+    }
+    close X;
+    die "Can't find out jspell lib dir" unless $JSPELLLIB;
 }
 
 =head1 SYNOPSIS
@@ -73,6 +81,7 @@ BEGIN {
 
 =head1 FUNCTIONS
 
+
 =head2 new
 
 Use to open a dictionary. Pass it the dictionary name and optionally a
@@ -86,7 +95,7 @@ sub new {
   local $/="\n";
   my $class = shift;
 
-  $self->{dictionary} = shift;
+  $self->{dictionary}  = shift;
   $self->{pdictionary} = shift ||
     (defined($ENV{HOME})?"$ENV{HOME}/.jspell.$self->{dictionary}":"");
 
@@ -100,7 +109,6 @@ sub new {
   } else {
       $self->{yaml} = {};
   }
-
 
 
   my $js = "$JSPELL -d $self->{dictionary} -a $pers -W 0 $flag -o'%s!%s:%s:%s:%s'";
@@ -129,6 +137,105 @@ sub new {
   }
 }
 
+=head2 nearmatches
+
+This method returns a list of analysis for words that are near-matches
+to the supplied word. Note that although a word might exist, this
+method will compute the near-matches as well.
+
+  @nearmatches = $dictionary->nearmatches('cavale');
+
+To compute the list of words to analyze, the method uses a list of
+equivalence classes that are present on the C<< SNDCLASSES >> section
+of dictionaries yaml files.
+
+It is also possible to specify a list of user-defined classes. These
+are supplied as a filename that contains, per line, the characters
+that are equivalent (with spaces separating them):
+
+   ch   x
+   ss   ç
+
+This example says that if a word uses C<ch>, then it can be replaced
+by C<x> for near-matches calculation. The inverse is also true.
+
+If these rules are stored in a file named C<classes.txt>, you can
+supply this list with:
+
+  @nearmatches = $dictionary->nearmatches('chaile', rules => 'classes.txt');
+
+=cut
+
+sub nearmatches {
+    my ($dict, $word, %ops) = @_;
+    my %classes;
+    if ($ops{rules}) {
+        -f $ops{rules} or die "Can't find file $ops{rules}";
+        open RULES, $ops{rules} or die "Can't open file $ops{rules}";
+        my @rules;
+        while(<RULES>) {
+            chomp;
+            push @rules, [split /\s+/];
+        }
+        close RULES;
+        %classes = _expand_classes(@rules);
+    } else {
+        if (exists($dict->{yaml}{META}{SNDCLASSES})) {
+            %classes = _expand_classes(@{ $dict->{yaml}{META}{SNDCLASSES} });
+        } else {
+            warn "No snd classes defined\n";
+        }
+    }
+
+    my @words = ($word);
+    for my $c (keys %classes) {
+        my @where;
+        my $l = length($c);
+        push @where, pos($word)-$l while $word =~ /$c/g;
+        for my $i (@where) {
+            my $o = $word;
+            substr($o,$i,length($c), $classes{$c});
+            push @words, $o if $o ne $word;
+        }
+    }
+
+    my $current_mode = $dict->setmode;
+    $dict->setmode({flags => 0, nm => "cc" });
+
+    my @nms;
+    for my $w (@words) {
+        my @analysis = $dict->fea($w);
+        push @nms, @analysis;
+    }
+
+    @nms = _remove_dups(@nms);
+
+    $dict->setmode($current_mode);
+    return @nms;
+}
+
+sub _remove_dups {
+    my @new;
+    while (my $struct = shift @_) {
+        push @new, $struct unless grep { Compare($_,$struct) } @new;
+    }
+    @new;
+}
+
+sub _expand_classes { map { _expand_class($_) } @_ }
+
+sub _expand_class {
+    my @class = @{ $_[0] };
+    my %subs;
+    for my $c (@class) {
+        my @other = grep { $_ ne $c } @class;
+        for (@other) {
+            $subs{$c} = $_;
+        }
+    }
+    %subs
+}
+
 =head2 setmode
 
    $dict->setmode({flags => 0, nm => "off" });
@@ -137,24 +244,21 @@ sub new {
 
 =item af
 
-(add flags)
-Enable parcial near misses, 
-by using rules not officially associated with the current word. 
-Does not give suggestions by changing letters on the original word.
-(default option)
+(add flags) Enable parcial near misses, by using rules not officially
+associated with the current word.  Does not give suggestions by
+changing letters on the original word.  (default option)
 
 =item full
 
-(add flags and change characters)
-Enable near misses, try to use rules where they are not applied, try 
-to give suggestions by swapping adjacent letters on the original word.
+(add flags and change characters) Enable near misses, try to use rules
+where they are not applied, try to give suggestions by swapping
+adjacent letters on the original word.
 
 =item cc
 
-(change characters)
-Enable parcial near misses, 
-by swapping adjacent, inserting or modifying letters on the original word.
-Does not use rules not associated with the current word. 
+(change characters) Enable parcial near misses, by swapping adjacent,
+inserting or modifying letters on the original word.  Does not use
+rules not associated with the current word.
 
 =item off
 

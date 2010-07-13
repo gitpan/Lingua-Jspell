@@ -7,6 +7,7 @@ author:
 build_requires:
   Archive::Any: 0.0932
   Config::AutoConf: 0.14
+  Data::Compare: 1.22
   ExtUtils::CBuilder: 0.27
   ExtUtils::Manifest: 0
   File::Copy: 0
@@ -27,10 +28,10 @@ name: Lingua-Jspell
 provides:
   Lingua::Jspell:
     file: lib/Lingua/Jspell.pm
-    version: 1.65
+    version: 1.66
   Lingua::Jspell::DictManager:
     file: lib/Lingua/Jspell/DictManager.pm
     version: 0.01
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.65
+version: 1.66

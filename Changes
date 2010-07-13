@@ -1,5 +1,9 @@
 Revision history for Lingua-Jspell
 
+1.66 July 13, 2010
+   - Added 'nearmatches' method.
+   - Fixed some issues with relative paths.
+
 1.65 June 15, 2010
    - After one year, a bump of 0.02 in the version, as this is a relevant release.
    - Create libjspell library in all 3 major platforms
