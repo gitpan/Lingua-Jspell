@@ -5,7 +5,7 @@ use strict;
 use Config;
 use Carp;
 use Config::AutoConf;
-use Config::AutoConf::Linker;
+use ExtUtils::LibBuilder;
 use ExtUtils::ParseXS;
 use ExtUtils::Mkbootstrap;
 use File::Spec::Functions qw.catdir catfile.;
@@ -78,6 +78,9 @@ sub ACTION_code {
                   catdir("blib","bin")) {
         mkpath $path unless -d $path;
     }
+
+    my $libbuilder = ExtUtils::LibBuilder->new;
+    $self->notes(libbuilder => $libbuilder);
 
     my $x = $self->notes('libdir');
     $x =~ s/\\/\\\\/g;
@@ -213,39 +216,33 @@ sub ACTION_create_binaries {
     my $self = shift;
     my $cbuilder = $self->cbuilder;
 
-    my $EXEEXT = $Config::AutoConf::EXEEXT;
-
-    my ($LD,$CCL) = Config::AutoConf::Linker::detect_library_link_commands($cbuilder);
-    die "Can't get a suitable way to compile a C library\n" if (!$LD || !$CCL);
-
+    my $libbuilder = $self->notes('libbuilder');
+    my $EXEEXT = $libbuilder->{exeext};
     my $extralinkerflags = $self->notes('lcurses').$self->notes('ccurses');
 
     my @toinstall;
-    my $exe_file = catfile("src","jspell$EXEEXT");
+    my $exe_file = catfile("src" => "jspell$EXEEXT");
     push @toinstall, $exe_file;
-    my $object   = catfile("src","jmain.o");
+    my $object   = catfile("src" => "jmain.o");
     my $libdir   = $self->install_path('usrlib');
     if (!$self->up_to_date($object, $exe_file)) {
-        $CCL->($cbuilder,
-               exe_file => $exe_file,
-               objects  => [ $object ],
-               ($^O !~ /darwin/)?
-               (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
-               (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
+        $libbuilder->link_executable(exe_file => $exe_file,
+                                     objects  => [ $object ],
+                                     ($^O !~ /darwin/)?
+                                     (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
+                                     (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
     }
 
     $exe_file = catfile("src","jbuild$EXEEXT");
     push @toinstall, $exe_file;
     $object   = catfile("src","jbuild.o");
     if (!$self->up_to_date($object, $exe_file)) {
-        $CCL->($cbuilder,
-               exe_file => $exe_file,
-               objects  => [ $object ],
-               ($^O !~ /darwin/)?
-               (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
-               (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
+        $libbuilder->link_executable(exe_file => $exe_file,
+                                     objects  => [ $object ],
+                                     ($^O !~ /darwin/)?
+                                     (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
+                                     (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
     }
-
 
     for my $file (@toinstall) {
         $self->copy_if_modified( from    => $file,
@@ -258,16 +255,14 @@ sub ACTION_create_library {
     my $self = shift;
     my $cbuilder = $self->cbuilder;
 
-    my $LIBEXT = $Config::AutoConf::LIBEXT;
+    my $libbuilder = $self->notes('libbuilder');
+    my $LIBEXT = $libbuilder->{libext};
 
     my @files = qw!correct defmt dump gclass good hash jjflags
                    jslib jspell lookup makedent sc-corr term
                    tgood tree vars xgets y.tab!;
 
     my @objects = map { catfile("src","$_.o") } @files;
-
-    my ($LD,$CCL) = Config::AutoConf::Linker::detect_library_link_commands($cbuilder);
-    die "Can't get a suitable way to compile a C library\n" if (!$LD || !$CCL);
 
     my $libpath = $self->notes('libdir');
     $libpath = catfile($libpath, "libjspell$LIBEXT");
@@ -277,12 +272,11 @@ sub ACTION_create_library {
     $extralinkerflags.=" -install_name $libpath" if $^O =~ /darwin/;
 
     if (!$self->up_to_date(\@objects, $libfile)) {
-        $LD->($cbuilder,
-              module_name => 'libjspell',
-              extra_linker_flags => $extralinkerflags,
-              objects => \@objects,
-              lib_file => $libfile,
-             );
+        $libbuilder->link(module_name => 'libjspell',
+                          extra_linker_flags => $extralinkerflags,
+                          objects => \@objects,
+                          lib_file => $libfile,
+                         );
     }
 
     my $libdir = catdir($self->blib, 'usrlib');

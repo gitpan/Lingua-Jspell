@@ -19,6 +19,7 @@ my $builder = MyBuilder->new
                       'ExtUtils::Manifest' => '0',
                       'Config::AutoConf'   => '0.14',
                       'ExtUtils::CBuilder' => '0.27',
+                      'ExtUtils::LibBuilder' => '0.01',
                       'Module::Build'      => '0.3603',
                       'File::Which'        => '0',
                       'Archive::Any'       => '0.0932',

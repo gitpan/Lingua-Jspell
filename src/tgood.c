@@ -280,75 +280,74 @@ static void chk_suf(
 
 
 static void see_if_word_is_in_dictionary(
-      register struct flagent *flent,   /* Current table entry */
-      register int tlen,                /* Length of tword */
-      ichar_t *tword,                    /* Tmp cpy */
-      register ichar_t *cp,             /* Pointer into end of ucword */
-      ichar_t *word,                    /* Word to be checked */
-      int      ignoreflagbits,          /* Ignore whether affix is legal */
-      int      allhits,                 /* Keep going after first hit */
-      int      add_poss,
-      int      reconly)                 /* See only recursive (+) flags */
+    register struct flagent *flent,   /* Current table entry */
+    register int tlen,                /* Length of tword */
+    ichar_t *tword,                   /* Tmp cpy */
+    register ichar_t *cp,             /* Pointer into end of ucword */
+    ichar_t *word,                    /* Word to be checked */
+    int      ignoreflagbits,          /* Ignore whether affix is legal */
+    int      allhits,                 /* Keep going after first hit */
+    int      add_poss,
+    int      reconly)                 /* See only recursive (+) flags */
 /* the result will be in the array hits (a word may have several possible bases) */
 {
-   int    preadd;                    /* Length added to tword2 as prefix */
-   struct dent *dent;                /* Dictionary entry we found */
-   ichar_t tword2[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];  /* 2nd copy for ins_root_cap */
+    int    preadd;                    /* Length added to tword2 as prefix */
+    struct dent *dent;                /* Dictionary entry we found */
+    ichar_t tword2[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];  /* 2nd copy for ins_root_cap */
 
-   tlen += flent->stripl;
-   if (cflag) {
-      flagpr(tword, BITTOCHAR(flent->flagbit), flent->stripl,
-                              flent->affl, flent->jclass, -1, 0, 0);
-   }
-   else if (ignoreflagbits) {   /* ignore if affix is legal */
-       if ((dent = lookup(tword, 1)) != NULL) {
-          if (add_poss)
-             add_my_poss(word, dent, flent, NULL, NULL);
-          cp = tword2;
-          if (flent->affl) {
-             icharcpy(cp, flent->affix);
-             cp += flent->affl;
-             *cp++ = '+';     /* the word was found throug affix removal */
-          }
-          preadd = cp - tword2;
-          icharcpy(cp, tword);
-          cp += tlen;
-          if (flent->stripl) {
-             *cp++ = '-';
-             icharcpy(cp, flent->strip);
-          }
-          ins_root_cap(tword2, word, flent->stripl, preadd,
-                       0, (cp - tword2) - tlen - preadd,
-                       dent, flent, (struct flagent *) NULL);
-          }
-       }
-   else {
-      saw_mode = 1;
-      while ((dent = lookup(tword, 1)) && (allhits || (numhits == 0))) {
-         if (TSTMASKBIT(dent->mask, flent->flagbit)  &&
-             (act_rec == -1 || TSTMASKBIT(dent->mask, rhits[act_rec]->flagbit)) &&
-             numhits < MAX_HITS) {
+    tlen += flent->stripl;
+    if (cflag) {
+        flagpr(tword, BITTOCHAR(flent->flagbit), flent->stripl,
+               flent->affl, flent->jclass, -1, 0, 0);
+    }
+    else if (ignoreflagbits) {   /* ignore if affix is legal */
+        if ((dent = lookup(tword, 1)) != NULL) {
             if (add_poss)
-               add_my_poss(tword, dent, flent, NULL, NULL);
-            if (numhits < MAX_HITS) {
-               hits[numhits].dictent = dent;
-               hits[numhits].prefix = flent;   /* includes class */
-               hits[numhits].suffix = hits[numhits].suffix2 = NULL;
-               numhits++;
+                add_my_poss(word, dent, flent, NULL, NULL);
+            cp = tword2;
+            if (flent->affl) {
+                icharcpy(cp, flent->affix);
+                cp += flent->affl;
+                *cp++ = '+';     /* the word was found throug affix removal */
             }
-             else fprintf(stderr, MAX_HITS_REACHED, 7);
-         }
+            preadd = cp - tword2;
+            icharcpy(cp, tword);
+            cp += tlen;
+            if (flent->stripl) {
+                *cp++ = '-';
+                icharcpy(cp, flent->strip);
+            }
+            ins_root_cap(tword2, word, flent->stripl, preadd,
+                         0, (cp - tword2) - tlen - preadd,
+                         dent, flent, (struct flagent *) NULL);
+        }
+    }
+    else {
+        saw_mode = 1;
+        while ((dent = lookup(tword, 1)) && (allhits || (numhits == 0))) {
+            if (TSTMASKBIT(dent->mask, flent->flagbit)  &&
+                (act_rec == -1 || TSTMASKBIT(dent->mask, rhits[act_rec]->flagbit)) &&
+                numhits < MAX_HITS) {
+                if (add_poss)
+                    add_my_poss(tword, dent, flent, NULL, NULL);
+                if (numhits < MAX_HITS) {
+                    hits[numhits].dictent = dent;
+                    hits[numhits].prefix = flent;   /* includes class */
+                    hits[numhits].suffix = hits[numhits].suffix2 = NULL;
+                    numhits++;
+                }
+                else fprintf(stderr, MAX_HITS_REACHED, 7);
+            }
+        }
+        put_saws_off(tword, 1);
+        saw_mode = 0;
+        if (!allhits)
+            return;
+    }
 
-      }
-      put_saws_off(tword, 1);
-      saw_mode = 0;
-      if (!allhits)
-         return;
-   }
-
-   /* Handle cross-products (with prefixes and sufixes) */
-   if (flent->flagflags & FF_CROSSPRODUCT)
-      chk_suf(word, tword, tlen, 1, flent, ignoreflagbits, allhits, add_poss, reconly);
+    /* Handle cross-products (with prefixes and sufixes) */
+    if (flent->flagflags & FF_CROSSPRODUCT)
+        chk_suf(word, tword, tlen, 1, flent, ignoreflagbits, allhits, add_poss, reconly);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -356,55 +355,55 @@ static void see_if_word_is_in_dictionary(
 /* Check some prefix flags */
 /* the result will be in the array hits (a word may have several possible bases) */
 static void pfx_list_chk(
-   ichar_t *       word,             /* Word to be checked */
-   ichar_t *       ucword,           /* Upper-case-only word */
-   int             len,              /* The length of ucword */
-   struct flagptr *ind,              /* Flag index table */
-   int             ignoreflagbits,   /* Ignore whether affix is legal */
-   int             allhits,          /* Keep going after first hit */
-   int             add_poss,
-   int             reconly)          /* See only recursive (+) flags */
+    ichar_t *       word,             /* Word to be checked */
+    ichar_t *       ucword,           /* Upper-case-only word */
+    int             len,              /* The length of ucword */
+    struct flagptr *ind,              /* Flag index table */
+    int             ignoreflagbits,   /* Ignore whether affix is legal */
+    int             allhits,          /* Keep going after first hit */
+    int             add_poss,
+    int             reconly)          /* See only recursive (+) flags */
 {
-   int     cond;                     /* Condition number */
-   register ichar_t *cp;             /* Pointer into end of ucword */
-   int     entcount;                 /* Number of entries to process */
-   register struct flagent *flent;   /* Current table entry */
-   register int tlen;                /* Length of tword */
-   ichar_t tword[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4]; /* Tmp cpy */
-   /* tword is a test word, we have to use the rules "reversed" to get the
-      base word of the word we are testing, then we will check that word
-      in the dictionary */
+    int     cond;                     /* Condition number */
+    register ichar_t *cp;             /* Pointer into end of ucword */
+    int     entcount;                 /* Number of entries to process */
+    register struct flagent *flent;   /* Current table entry */
+    register int tlen;                /* Length of tword */
+    ichar_t tword[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4]; /* Tmp cpy */
+    /* tword is a test word, we have to use the rules "reversed" to get the
+       base word of the word we are testing, then we will check that word
+       in the dictionary */
+    
+    /* for each entrie of prefixes ... */
+    for (flent = ind->pu.ent, entcount = ind->numents;  entcount > 0;
+         flent++, entcount--) {
+        /* See if the prefix matches. */
+        tlen = len - flent->affl;
+        if (tlen > 0  /* the prefix must be smaller than the word */
+            && (flent->affl == 0
+                || icharncmp(flent->affix, ucword, flent->affl) == 0)  /* the left characters of the word must be equal to the prefix */
+            && tlen + flent->stripl >= flent->numconds) {
+            /*
+             * The prefix matches.  Remove it, replace it by the "strip"
+             * string (if any), and check the original conditions.
+             */
+            if (flent->stripl)   /* if the rules tell that the base word is stripped, put the stipped string of the base word */
+                icharcpy(tword, flent->strip);
+            
+            icharcpy(tword + flent->stripl, ucword + flent->affl);
 
-   /* for each entrie of prefixes ... */
-   for (flent = ind->pu.ent, entcount = ind->numents;  entcount > 0;
-        flent++, entcount--) {
-      /* See if the prefix matches. */
-      tlen = len - flent->affl;
-      if (tlen > 0  /* the prefix must be smaller than the word */
-          && (flent->affl == 0
-              || icharncmp(flent->affix, ucword, flent->affl) == 0)  /* the left characters of the word must be equal to the prefix */
-          && tlen + flent->stripl >= flent->numconds) {
-         /*
-          * The prefix matches.  Remove it, replace it by the "strip"
-          * string (if any), and check the original conditions.
-          */
-         if (flent->stripl)   /* if the rules tell that the base word is stripped, put the stipped string of the base word */
-            icharcpy(tword, flent->strip);
-
-         icharcpy(tword + flent->stripl, ucword + flent->affl);
-
-         /* check conditions with the constructed word */
-         cp = tword;
-         for (cond = 0;  cond < flent->numconds;  cond++) {
-            if ((flent->conds[*cp++] & (1 << cond)) == 0)
-               break;
-         }
-         if (cond >= flent->numconds)  /* all conditions satisfied */
-            /* The conditions match.  See if the word is in the dictionary */
-           see_if_word_is_in_dictionary(flent, tlen, tword, cp, word,
-                                  ignoreflagbits, allhits, add_poss, reconly);
-      }
-   }
+            /* check conditions with the constructed word */
+            cp = tword;
+            for (cond = 0;  cond < flent->numconds;  cond++) {
+                if ((flent->conds[*cp++] & (1 << cond)) == 0)
+                    break;
+            }
+            if (cond >= flent->numconds)  /* all conditions satisfied */
+                /* The conditions match.  See if the word is in the dictionary */
+                see_if_word_is_in_dictionary(flent, tlen, tword, cp, word,
+                                             ignoreflagbits, allhits, add_poss, reconly);
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------*/

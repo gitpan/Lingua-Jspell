@@ -4,7 +4,7 @@
  * @file
  * @brief routines to manage the library specific aspects
  *
- * Copyright 1994-2006 Ulisses Pinto & José João Almeida & Alberto Simões
+ * Copyright 1994-2010 Ulisses Pinto & José João Almeida & Alberto Simões
  *                     Projecto Natura, Universidade do Minho
  */
 

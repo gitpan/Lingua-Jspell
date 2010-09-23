@@ -31,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.66';
+our $VERSION = '1.67';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -187,7 +187,7 @@ sub nearmatches {
         }
     }
 
-    my @words = ($word);
+    my @words = ();
     for my $c (keys %classes) {
         my @where;
         my $l = length($c);
@@ -204,9 +204,13 @@ sub nearmatches {
 
     my @nms;
     for my $w (@words) {
-        my @analysis = $dict->fea($w);
+        my @analysis = map { $_->{guess}||=$w; $_ } $dict->fea($w);
         push @nms, @analysis;
     }
+
+    @nms = grep { $_->{guess} ne $word } @nms;
+    # This one is not a guess
+    push @nms, $dict->fea($word);
 
     @nms = _remove_dups(@nms);
 
@@ -1017,22 +1021,22 @@ sub _yaml_file {
 }
 
 sub _mode {
-  my $m = shift;
-  my $r="";
-  if ($m->{nm}) {
-    if ($m->{nm} eq "af")              ### af = GPy --> Gym
-      { $r .= "\$G\n\$m\n\$y\n" }
-    elsif ($m->{nm} eq "full")         ### full = GYm
-      { $r .= "\$G\n\$Y\n\$m\n" }
-    elsif ($m->{nm} eq "cc")           ### cc = GPY
-      { $r .= "\$G\n\$P\n\$Y\n" }
-    elsif ($m->{nm} eq "off")          ### off = gPy
-      { $r .= "\$g\n\$P\n\$y\n" }
-    else {}
-  }
-  if ($m->{flags})          {$r .= "\$z\n"}
-  else                      {$r .= "\$Z\n"}
-  return $r;
+    my $m = shift;
+    my $r="";
+    if ($m->{nm}) {
+        if ($m->{nm} eq "af")              ### af = GPy --> Gym
+          { $r .= "\$G\n\$m\n\$y\n" }
+        elsif ($m->{nm} eq "full")         ### full = GYm
+          { $r .= "\$G\n\$Y\n\$m\n" }
+        elsif ($m->{nm} eq "cc")           ### cc = GPY
+          { $r .= "\$G\n\$P\n\$Y\n" }
+        elsif ($m->{nm} eq "off")          ### off = gPy
+          { $r .= "\$g\n\$P\n\$y\n" }
+        else {}
+    }
+    if ($m->{flags})          {$r .= "\$z\n"}
+    else                      {$r .= "\$Z\n"}
+    return $r;
 }
 
 

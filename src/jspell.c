@@ -1,3 +1,4 @@
+
 /* -*- Mode: C; tab-width: 4; -*- */
 
 /**
@@ -9,7 +10,7 @@
  *
  * Copyright (c) 1983, by Pace Willisson
  * Copyright (c) 1992, 1993, Geoff Kuenning, Granada Hills, CA
- * Copyright (c) 1994-2009,
+ * Copyright (c) 1994-2010,
  *    Ulisses Pinto,
  *    José João Almeida,
  *    Alberto Simões,
@@ -853,19 +854,19 @@ void init_jspell(char *opt)
     argv[0] = aux;
     i = 0;
     while (options[i] != '\0') {
-	argv[argc] = options+i;
-	argc++;
-	/* advance letters */
-	while (options[i] != ' ' && options[i] != '\0')
-	    i++;
-	/* advance spaces */
-	while (options[i] == ' ') {
-	    options[i] = '\0';
-	    i++;
-	}
+        argv[argc] = options+i;
+        argc++;
+        /* advance letters */
+        while (options[i] != ' ' && options[i] != '\0')
+            i++;
+        /* advance spaces */
+        while (options[i] == ' ') {
+            options[i] = '\0';
+            i++;
+        }
     }
     /*   for (i = 0; i < argc; i++)
-	 printf("%d %s\n", i, argv[i]); */
+         printf("%d %s\n", i, argv[i]); */
     my_main(argc, argv, 1);
 }
 
@@ -878,14 +879,14 @@ static void det_tflag(char *filename)
     /* See if the file is a .tex file.  If so, set the appropriate flags. */
     tflag = deftflag;
     if ((cp = rindex(filename, '.')) != NULL  &&  strcmp(cp, ".tex") == 0)
-	tflag = 1;
+        tflag = 1;
 }
 
 static void det_defdupchar(char *filename)
 {
     if (prefstringchar < 0) {
-	defdupchar = findfiletype(filename, 0, &tflag);
-	if (defdupchar < 0) defdupchar = 0;
+        defdupchar = findfiletype(filename, 0, &tflag);
+        if (defdupchar < 0) defdupchar = 0;
     }
 }
 
@@ -893,8 +894,8 @@ static void det_readonly_access(char *filename)
 {
     readonly = access(filename, W_OK) < 0;
     if (readonly) {
-	fprintf(stderr, ISPELL_C_CANT_WRITE, filename);
-	sleep((unsigned) 2);
+        fprintf(stderr, ISPELL_C_CANT_WRITE, filename);
+        sleep((unsigned) 2);
     }
 }
 
@@ -947,13 +948,13 @@ static void update_file(char *filename, struct stat *statbuf)
     chmod(filename, statbuf->st_mode);
 
     while ((c = getc(infile)) != EOF)
-	putc(c, outfile);
+        putc(c, outfile);
 
     fclose(infile);
     fclose(outfile);
 
     if (xflag  &&  strncmp(filename, bakfile, MAXNAMLEN) != 0)
-	unlink(bakfile);
+        unlink(bakfile);
 }
 
 /**
@@ -988,10 +989,10 @@ void dofile(char *filename)
     fclose(outfile);
 
     if (!cflag)
-	treeoutput();
+        treeoutput();
 
     if (changes && !readonly)
-	update_file(filename, &statbuf);
+        update_file(filename, &statbuf);
     unlink(tempfile);
 }
 
@@ -1022,62 +1023,62 @@ static void expandmode(int option) {
     /* char           strg_out[MAXSOLLEN]; */
     
     while (xgets(buf, sizeof buf, stdin) != NULL) {
-	rootlength = strlen(buf);
-	if (buf[rootlength - 1] == '\n')
-	    buf[--rootlength] = '\0';
-	strcpy(origbuf, buf);
-	if ((flagp = index(buf, hashheader.flagmarker)) != NULL) {
-	    rootlength = flagp - buf;
-	    *flagp++ = '\0';
-	}
-	if (option == 2  ||  option == 3  ||  option == 4)
-	    printf("%s ", origbuf);
-	if (flagp != NULL) {
-	    if (flagp - buf > INPUTWORDLEN)
-		buf[INPUTWORDLEN] = '\0';
-	}
-	else {
-	    if ((int) strlen(buf) > INPUTWORDLEN - 1)
-		buf[INPUTWORDLEN] = '\0';
-	}
-	fputs(buf, stdout);
-	fputc(' ', stdout);
-	/* strtoichar(ibuf, buf, sizeof ibuf, 1);
-	   if (good(ibuf, 0, 0, 0)) {
-	   get_info(hits[0]);
-	   sprintf(strg_out, o_form, root, macro(root_class), pre_class,
-	   macro(suf_class), suf2_class);
-	   printf("%s ", strg_out);
-	   }
-	*/
-	if (flagp != NULL) {
-	    bzero((char *) mask, sizeof(mask));
-	    while (*flagp != '\0'  &&  *flagp != '\n') {
+        rootlength = strlen(buf);
+        if (buf[rootlength - 1] == '\n')
+            buf[--rootlength] = '\0';
+        strcpy(origbuf, buf);
+        if ((flagp = index(buf, hashheader.flagmarker)) != NULL) {
+            rootlength = flagp - buf;
+            *flagp++ = '\0';
+        }
+        if (option == 2  ||  option == 3  ||  option == 4)
+            printf("%s ", origbuf);
+        if (flagp != NULL) {
+            if (flagp - buf > INPUTWORDLEN)
+                buf[INPUTWORDLEN] = '\0';
+        }
+        else {
+            if ((int) strlen(buf) > INPUTWORDLEN - 1)
+                buf[INPUTWORDLEN] = '\0';
+        }
+        fputs(buf, stdout);
+        fputc(' ', stdout);
+        /* strtoichar(ibuf, buf, sizeof ibuf, 1);
+           if (good(ibuf, 0, 0, 0)) {
+           get_info(hits[0]);
+           sprintf(strg_out, o_form, root, macro(root_class), pre_class,
+           macro(suf_class), suf2_class);
+           printf("%s ", strg_out);
+           }
+        */
+        if (flagp != NULL) {
+            bzero((char *) mask, sizeof(mask));
+            while (*flagp != '\0'  &&  *flagp != '\n') {
 #if MASKBITS <= 32
-		temp = CHARTOBIT(mytoupper(chartoichar(*flagp)));
+                temp = CHARTOBIT(mytoupper(chartoichar(*flagp)));
 #else
-		temp = CHARTOBIT((unsigned char) *flagp);
+                temp = CHARTOBIT((unsigned char) *flagp);
 #endif
-		if (temp >= 0  &&  temp <= LARGESTFLAG)
-		    SETMASKBIT (mask, temp);
-		flagp++;
-		/* Accept old-format dicts with extra slashes */
-		if (*flagp == hashheader.flagmarker)
-		    flagp++;
-	    }
-	    if (strtoichar(ibuf, buf, sizeof ibuf, 1))
-		fprintf(stderr, WORD_TOO_LONG(buf));
-	    explength = expand_pre(origbuf, ibuf, mask, option, "");
-	    explength += expand_suf(origbuf, ibuf, mask, 0, option, "", "");
-	    explength += rootlength;
-	    if (option == 4) {
-		sprintf(ratiobuf, " %f",
-			(double) explength / (double) rootlength);
-		fputs(ratiobuf, stdout);
-		expand_pre(origbuf, ibuf, mask, 3, ratiobuf);
-		expand_suf(origbuf, ibuf, mask, 0, 3, ratiobuf, "");
-	    }
-	}
-	printf(SEP4);
+                if (temp >= 0  &&  temp <= LARGESTFLAG)
+                    SETMASKBIT (mask, temp);
+                flagp++;
+                /* Accept old-format dicts with extra slashes */
+                if (*flagp == hashheader.flagmarker)
+                    flagp++;
+            }
+            if (strtoichar(ibuf, buf, sizeof ibuf, 1))
+                fprintf(stderr, WORD_TOO_LONG(buf));
+            explength = expand_pre(origbuf, ibuf, mask, option, "");
+            explength += expand_suf(origbuf, ibuf, mask, 0, option, "", "");
+            explength += rootlength;
+            if (option == 4) {
+                sprintf(ratiobuf, " %f",
+                        (double) explength / (double) rootlength);
+                fputs(ratiobuf, stdout);
+                expand_pre(origbuf, ibuf, mask, 3, ratiobuf);
+                expand_suf(origbuf, ibuf, mask, 0, 3, ratiobuf, "");
+            }
+        }
+        printf(SEP4);
     }
 }
