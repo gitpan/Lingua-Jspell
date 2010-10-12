@@ -28,10 +28,10 @@ name: Lingua-Jspell
 provides:
   Lingua::Jspell:
     file: lib/Lingua/Jspell.pm
-    version: 1.68
+    version: 1.69
   Lingua::Jspell::DictManager:
     file: lib/Lingua/Jspell/DictManager.pm
     version: 0.01
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.68
+version: 1.69

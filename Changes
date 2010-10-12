@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.69 October 12, 2010
+   - remove an annoying C warning from the build system.
+
 1.68 October 12, 2010
    - better installation handling (sudo support et al)
 
