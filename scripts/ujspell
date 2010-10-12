@@ -7,6 +7,8 @@ use File::Basename;
 use File::Spec::Functions;
 use IPC::Open3;
 
+use Lingua::Jspell::ConfigData;
+
 my $encontrei_l = 0;
 $encontrei_l = 1 if grep {$_ eq "-l"} @ARGV;
 
@@ -16,7 +18,7 @@ binmode(STDIN,":utf8");
 binmode(STDOUT,":utf8");
 
 my ($DW,$DR,$DE);
-my $exe = catfile('[% BINDIR %]',"jspell");
+my $exe = Lingua::Jspell::ConfigData->config('jspell');
 open3($DW,$DR,$DE,$exe,@ARGV);
 
 binmode($DW,":encoding(iso-8859-1)");

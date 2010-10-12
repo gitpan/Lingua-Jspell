@@ -18,7 +18,7 @@ our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif
                     greps => [qw.nlgrep setstopwords.]);
 # use Data::Dumper;
 use File::Spec::Functions;
-use File::Which qw/which/;
+use Lingua::Jspell::ConfigData;
 use IPC::Open3;
 use YAML::Any qw/LoadFile !Load !Dump/;
 use Data::Compare;
@@ -31,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.67';
+our $VERSION = '1.68';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -42,17 +42,9 @@ BEGIN {
     my $EXE = "";
     $EXE=".exe" if $^O eq "MSWin32";
 
-    # Search for jspell binary.
-    # LIBDIR = "/opt/local/lib/jspell"
-
-    $JSPELL = which("jspell$EXE");
-    if (!$JSPELL) {
-        # check if we are running under make test
-        $JSPELL = catfile("blib","bin","jspell$EXE");
-        $JSPELL = undef unless -e $JSPELL;
-        die "jspell binary cannot be found!\n" unless $JSPELL;
-    }
-    die "jspell binary cannot be found!\n" unless -e $JSPELL;
+    $JSPELL = catfile("blib","bin","jspell$EXE");
+    $JSPELL = Lingua::Jspell::ConfigData->config("jspell") unless -x $JSPELL;
+    die "jspell binary cannot be found!\n" unless -x $JSPELL;
 
     open X, "$JSPELL -vv|" or die "Can't execute $JSPELL";
     while (<X>) {

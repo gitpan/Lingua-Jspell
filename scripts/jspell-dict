@@ -7,8 +7,9 @@ use Getopt::Long;
 use File::Basename;
 use File::Spec::Functions;
 use Lingua::Jspell::DictManager;
+use Lingua::Jspell::ConfigData;
 
-my $libdir = catfile('[% LIBDIR %]',"jspell");
+my $libdir = catfile(Lingua::Jspell::ConfigData->config('libdir'),"jspell");
 
 my ($exists, $listall, $dicdir, $name, $mkname);
 my $result = GetOptions("list-dics"   => \$listall,

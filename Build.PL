@@ -21,7 +21,6 @@ my $builder = MyBuilder->new
                       'ExtUtils::CBuilder' => '0.27',
                       'ExtUtils::LibBuilder' => '0.01',
                       'Module::Build'      => '0.3603',
-                      'File::Which'        => '0',
                       'Archive::Any'       => '0.0932',
                       'Data::Compare'      => '1.22',
                       'LWP::Simple'        => '0',
@@ -53,6 +52,10 @@ if ($^O =~ /mswin32/i) {
 
 $builder->notes('version'  => $version);
 $builder->notes('libdir'   => $libdir);
+
+$builder->config_data("version" => $version);
+$builder->config_data("libdir"  => $libdir);
+$builder->config_data("bindir"  => $builder->install_destination('bin'));
 
 $builder->add_build_element('usrlib');
 $builder->add_build_element('pcfile');

@@ -32,14 +32,7 @@ sub ACTION_pre_install {
                                  flatten => 1 );
     }
 
-    # Interpolate the script files, and prepare them for installation
-    _interpolate(catfile('scripts','ujspell.in') => catfile('scripts','ujspell'),
-                 BINDIR => $self->install_destination('bin'));
-    _interpolate(catfile('scripts','jspell-dict.in') => catfile('scripts','jspell-dict'),
-                 LIBDIR => $self->install_destination('usrlib'));
-    _interpolate(catfile('scripts','jspell-installdic.in')=> catfile('scripts','jspell-installdic'),
-                 LIBDIR => $self->install_destination('usrlib'));
-
+    ## FIXME - usar o Module::Build para isto?
     for (qw.ujspell jspell-dict jspell-installdic.) {
         $self->copy_if_modified( from   => catfile("scripts",$_),
                                  to_dir => catdir('blib','script'),
@@ -182,13 +175,13 @@ sub ACTION_create_manpages {
         `pod2man --section=1 --center="Lingua::Jspell" --release="Lingua-Jspell-$version" $pod $man`;
     }
 
-    my $pod = 'scripts/jspell-dict.in';
+    my $pod = 'scripts/jspell-dict';
     my $man = catfile('blib','bindoc','jspell-dict.1');
     unless ($self->up_to_date($pod, $man)) {
         `pod2man --section=1 --center="Lingua::Jspell" --release="Lingua-Jspell-$version" $pod $man`;
     }
 
-    $pod = 'scripts/jspell-installdic.in';
+    $pod = 'scripts/jspell-installdic';
     $man = catfile('blib','bindoc','jspell-installdic.1');
     unless ($self->up_to_date($pod, $man)) {
         `pod2man --section=1 --center="Lingua::Jspell" --release="Lingua-Jspell-$version" $pod $man`;
@@ -222,6 +215,7 @@ sub ACTION_create_binaries {
 
     my @toinstall;
     my $exe_file = catfile("src" => "jspell$EXEEXT");
+    $self->config_data("jspell" => catfile($self->config_data("bindir") => "jspell$EXEEXT"));
     push @toinstall, $exe_file;
     my $object   = catfile("src" => "jmain.o");
     my $libdir   = $self->install_path('usrlib');
@@ -234,6 +228,7 @@ sub ACTION_create_binaries {
     }
 
     $exe_file = catfile("src","jbuild$EXEEXT");
+    $self->config_data("jbuild" => catfile($self->config_data("bindir") => "jbuild$EXEEXT"));
     push @toinstall, $exe_file;
     $object   = catfile("src","jbuild.o");
     if (!$self->up_to_date($object, $exe_file)) {

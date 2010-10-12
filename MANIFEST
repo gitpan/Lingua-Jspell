@@ -13,9 +13,9 @@ t/00.load.t
 t/pod-coverage.t
 t/pod.t
 
-scripts/jspell-installdic.in
-scripts/jspell-dict.in
-scripts/ujspell.in
+scripts/jspell-installdic
+scripts/jspell-dict
+scripts/ujspell
 scripts/jspellfea
 scripts/jspell-dump
 

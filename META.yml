@@ -12,7 +12,6 @@ build_requires:
   ExtUtils::LibBuilder: 0.01
   ExtUtils::Manifest: 0
   File::Copy: 0
-  File::Which: 0
   IPC::Open2: 0
   LWP::Simple: 0
   Module::Build: 0.3603
@@ -29,10 +28,10 @@ name: Lingua-Jspell
 provides:
   Lingua::Jspell:
     file: lib/Lingua/Jspell.pm
-    version: 1.67
+    version: 1.68
   Lingua::Jspell::DictManager:
     file: lib/Lingua/Jspell/DictManager.pm
     version: 0.01
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.67
+version: 1.68

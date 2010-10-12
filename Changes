@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.68 October 12, 2010
+   - better installation handling (sudo support et al)
+
 1.67 Setember 23, 2010
    - Fixed small detail on 'nearmatches' method
    - Changed dependencies on ExtUtils::LibBuilder
