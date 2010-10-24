@@ -27,10 +27,10 @@ further details on Jspell usage and Jspell dictionaries.
 
 To install this module, run the following commands:
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
 
 Please submit build problems as RT tickets using 
 bug-lingua-jspell@rt.cpan.org
@@ -38,6 +38,6 @@ bug-lingua-jspell@rt.cpan.org
  COPYRIGHT AND LICENCE
 -------------------------------------------------------------------------------
 
-Copyright (C) 2008 Projecto Natura
+Copyright (C) 2008-2010 Projecto Natura
 
 -------------------------------------------------------------------------------

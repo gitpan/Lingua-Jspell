@@ -20,6 +20,12 @@ our $LIBDIR = Lingua::Jspell::ConfigData->config('libdir');
 for (@ARGV) {
     if (-d $_) {
         install_directory($_);
+    } elsif (-f $_ && /^(.*)\.(dic|aff|hash|yaml)$/) {
+        my $basename = $1;
+        install_by_basename($basename);
+    } elsif (-f "$_\.dic") {
+        my $basename = $_;
+        install_by_basename($basename);
     } else {
         my $language = lc;
 
@@ -30,12 +36,41 @@ for (@ARGV) {
     }
 }
 
+sub install_by_basename {
+    my $basename = shift;
+    if (-f "$basename.yaml") {
+        mkdir "_OUT";
+        install_by_yaml("$basename.yaml");
+    }
+    elsif (-f "$basename.aff") {
+        mkdir "_OUT";
+        install_by_lang($basename);
+    }
+    else {
+        die "Can't guess dictionary structure."
+    }
+}
+
+sub install_by_yaml {
+    my $yaml = shift;
+    my $s = LoadFile($yaml);
+    my ($lang,@syn) = @{$s->{META}{IDS}};
+    die "YAML file doesn't contain a META/IDS section\n" unless $lang;
+    copy($yaml, catfile('_OUT',"$lang.yaml"));
+    continue_installation($lang, @syn);
+}
+
+sub install_by_lang {
+    my $lang = shift;
+    continue_installation($lang);
+}
+
 sub install_directory {
     my $path = shift;
     chdir $path or die "Can't access $path.";
     mkdir "_OUT";
 
-    my $lang;
+
     my @syn;
 
     # 1. check manifest...
@@ -47,23 +82,24 @@ sub install_directory {
     $v and print STDERR "- loading YAML file...";
     my ($yaml) = (<*.yaml>,<*.yml>);
     if ($yaml) {
-        my $s = LoadFile($yaml);
-        ($lang,@syn) = @{$s->{META}{IDS}};
-        die "YAML file doesn't contain a META/IDS section\n" unless $lang;
-        copy($yaml, catfile('_OUT',"$lang.yaml"));
         $v and print STDERR " OK\n";
+        install_by_yaml($yaml);
     } else {
         $v and print STDERR " FAIL\n";
         $v and print STDERR "- trying to guess a language name...";
         my ($aff) = <*.aff>;
         if ($aff and $aff =~ /(.*)\.aff/) {
-            $lang = $1;
             $v and print STDERR " OK\n";
+            install_by_lang($1);
         } else {
             $v and print STDERR " FAIL\n";
             die "Can't find a suitable language name\n"
         }
     }
+}
+
+sub continue_installation {
+    my ($lang, @syn) = @_;
 
     # 3. copy affix file
     $v and print STDERR "- checking for .aff file existence...";
@@ -133,7 +169,8 @@ sub install_directory {
             my $path = catdir($LIBDIR,"jspell");
             my $file = catfile($path,"$lang.$ext");
             if (-f $file) {
-                link $file, catfile($path,"$syn.$ext");
+                my $error = eval { symlink $file, catfile($path,"$syn.$ext"); 1 };
+                link $file, catfile($path,"$syn.$ext") if $error;
             }
         }
     }
