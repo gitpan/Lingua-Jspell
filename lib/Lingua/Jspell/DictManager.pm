@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Copy;
-use YAML::Any qw(LoadFile !Load !Dump);
+use YAML 'LoadFile';
 use File::Spec::Functions;
 use Lingua::Jspell;
 

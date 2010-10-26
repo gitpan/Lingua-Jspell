@@ -1,5 +1,10 @@
 Revision history for Lingua-Jspell
 
+1.71 October 26, 2010
+   - fixed Build.PL requirements;
+   - force an YAML implementation;
+   - fixed jspell-installdic for new dictionaries;
+
 1.70 October 24, 2010
    - jspell-installdic is now better, installing local dictionaries as well.
      (jspell-installdic port, on a folder where port.yaml is present)

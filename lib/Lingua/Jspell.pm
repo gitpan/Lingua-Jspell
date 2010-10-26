@@ -20,7 +20,7 @@ our %EXPORT_TAGS = (basic => [qw.onethat verif onethatverif
 use File::Spec::Functions;
 use Lingua::Jspell::ConfigData;
 use IPC::Open3;
-use YAML::Any qw/LoadFile !Load !Dump/;
+use YAML qw/LoadFile/;
 use Data::Compare;
 
 =head1 NAME
@@ -31,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.70';
+our $VERSION = '1.71';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
