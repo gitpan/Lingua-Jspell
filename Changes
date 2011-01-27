@@ -1,5 +1,11 @@
 Revision history for Lingua-Jspell
 
+1.73 January 27, 2011
+   - Fixed Build.PL for configure-time requirements
+
+1.72 November 20, 2010
+   - Install jslib.h header file.
+
 1.71 October 26, 2010
    - fixed Build.PL requirements;
    - force an YAML implementation;

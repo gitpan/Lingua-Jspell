@@ -657,12 +657,10 @@ void compound_info(char *strg_out, char *word, char *root, char *root_class,
  */
 void copy_array(char ar1[MAXPOSSIBLE][MAXSOLLEN],
                 char ar2[MAXPOSSIBLE][MAXSOLLEN]) {
-    int i;
-
-    i = -1;
+    int i = -1;
     do {
-	i++;
-	strcpy(ar1[i], ar2[i]);
+      i++;
+      strcpy(ar1[i], ar2[i]);
     } while (ar2[i][0] != '\0');
 }
 
@@ -673,7 +671,7 @@ void copy_array2(char ar1[MAXPOSSIBLE], char ar2[MAXPOSSIBLE]) {
     int i;
     
     for (i = 0; i < MAXPOSSIBLE; i++)
-	ar1[i] = ar2[i];
+      ar1[i] = ar2[i];
 }
 
 /*

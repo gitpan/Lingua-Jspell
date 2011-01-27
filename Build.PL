@@ -23,6 +23,12 @@ my $builder = MyBuilder->new
                 'IPC::Open2'         => '0',
                 'YAML'               => '0.72',
                },
+   configure_requires => {
+                          'Config::AutoConf'   => '0.14',
+                          'ExtUtils::CBuilder' => '0.27',
+                          'ExtUtils::LibBuilder' => '0.01',
+                          'Module::Build'      => '0.3603',
+                         },
    build_requires => {
                       'Config::AutoConf'   => '0.14',
                       'ExtUtils::CBuilder' => '0.27',
@@ -44,11 +50,14 @@ $builder = detect_curses($builder);
 ## HACK  HACK  HACK  HACK
 my $libdir = $builder->install_destination("bin");
 my $pkgconfig = $libdir;
+my $incdir    = $libdir;
 if ($^O =~ /mswin32/i) {
     $libdir = $ENV{WINDIR} || 'c:\\WINDOWS\\'; ## HACK HACK HACK
     $pkgconfig = undef;
+    $incdir    = undef;
 } else {
     $libdir =~ s/\bbin\b/lib/;
+    $incdir =~ s/\bbin\b/include/;
     $pkgconfig =~ s/\bbin\b/catdir("lib","pkgconfig")/e;
 }
 
@@ -57,11 +66,14 @@ $builder->notes('libdir'   => $libdir);
 
 $builder->config_data("version" => $version);
 $builder->config_data("libdir"  => $libdir);
+$builder->config_data("incdir"  => $incdir);
 $builder->config_data("bindir"  => $builder->install_destination('bin'));
 
 $builder->add_build_element('usrlib');
+$builder->add_build_element('incdir');
 $builder->add_build_element('pcfile');
 $builder->install_path( 'usrlib' => $libdir );
+$builder->install_path( 'incdir' => $incdir );
 $builder->install_path( 'pcfile' => $pkgconfig );
 
 $builder->create_build_script;

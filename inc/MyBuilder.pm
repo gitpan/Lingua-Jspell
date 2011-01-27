@@ -21,15 +21,19 @@ sub ACTION_pre_install {
         warn "libjspell.so will install on $usrlib. Be sure to add it to your LIBRARY_PATH\n"
     }
 
-    # Create and prepare for installation the .pc file if not under windows.
     if ($^O ne "MSWin32") {
+        # Create and prepare for installation the .pc file if not under windows.
         _interpolate('jspell.pc.in' => 'jspell.pc',
                      VERSION    => $self->notes('version'),
                      EXECPREFIX => $self->install_destination('bin'),
                      LIBDIR     => $self->install_destination('usrlib'));
         $self->copy_if_modified( from   => "jspell.pc",
-                                 to_dir => 'blib/pcfile',
+                                 to_dir => catdir('blib','pcfile'),
                                  flatten => 1 );
+
+        $self->copy_if_modified( from   => catfile('src','jslib.h'),
+                                 to_dir => catdir('blib','incdir'),
+                                 flatten => 1);
     }
 
     ## FIXME - usar o Module::Build para isto?
@@ -67,6 +71,7 @@ sub ACTION_code {
 
     for my $path (catdir("blib","bindoc"),
                   catdir("blib","pcfile"),
+                  catdir("blib","incdir"),
                   catdir("blib","script"),
                   catdir("blib","bin")) {
         mkpath $path unless -d $path;
