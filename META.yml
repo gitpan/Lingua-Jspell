@@ -15,7 +15,7 @@ configure_requires:
   ExtUtils::CBuilder: 0.27
   ExtUtils::LibBuilder: 0.01
   Module::Build: 0.3603
-generated_by: 'Module::Build version 0.3622'
+generated_by: 'Module::Build version 0.3624'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,7 +24,7 @@ name: Lingua-Jspell
 provides:
   Lingua::Jspell:
     file: lib/Lingua/Jspell.pm
-    version: 1.73
+    version: 1.74
   Lingua::Jspell::DictManager:
     file: lib/Lingua/Jspell/DictManager.pm
     version: 0.01
@@ -38,4 +38,4 @@ requires:
   YAML: 0.72
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.73
+version: 1.74

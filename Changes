@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.74 February 1, 2011
+   - Fixed compilation on linux (hopefully)
+
 1.73 January 27, 2011
    - Fixed Build.PL for configure-time requirements
 

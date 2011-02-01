@@ -98,59 +98,6 @@ sub ACTION_code {
     $self->SUPER::ACTION_code;
 }
 
-# sub ACTION_compile_xscode {
-    # my $self = shift;
-    # my $cbuilder = $self->cbuilder;
-
-    # my $archdir = catdir( $self->blib, 'arch', 'auto', 'Lingua', 'Jspell');
-    # mkpath( $archdir, 0, 0777 ) unless -d $archdir;
-
-    # print STDERR "\n** Preparing XS code\n";
-    # my $cfile = catfile("xscode","BibTeX.c");
-    # my $xsfile= catfile("xscode","BibTeX.xs");
-
-    # $self->add_to_cleanup($cfile); ## FIXME
-    # if (!$self->up_to_date($xsfile, $cfile)) {
-    #     ExtUtils::ParseXS::process_file( filename   => $xsfile,
-    #                                      prototypes => 0,
-    #                                      output     => $cfile);
-    # }
-
-    # my $ofile = catfile("xscode","BibTeX.o");
-    # $self->add_to_cleanup($ofile); ## FIXME
-    # if (!$self->up_to_date($cfile, $ofile)) {
-    #     $cbuilder->compile( source               => $cfile,
-    #                         include_dirs         => [ catdir("btparse","src") ],
-    #                         object_file          => $ofile);
-    # }
-
-    # # Create .bs bootstrap file, needed by Dynaloader.
-    # my $bs_file = catfile( $archdir, "BibTeX.bs" );
-    # if ( !$self->up_to_date( $ofile, $bs_file ) ) {
-    #     ExtUtils::Mkbootstrap::Mkbootstrap($bs_file);
-    #     if ( !-f $bs_file ) {
-    #         # Create file in case Mkbootstrap didn't do anything.
-    #         open( my $fh, '>', $bs_file ) or confess "Can't open $bs_file: $!";
-    #     }
-    #     utime( (time) x 2, $bs_file );    # touch
-    # }
-
-    # my $objects = $self->rscan_dir("xscode",qr/\.o$/);
-    # # .o => .(a|bundle)
-    # my $lib_file = catfile( $archdir, "BibTeX.$Config{dlext}" );
-    # if ( !$self->up_to_date( [ @$objects ], $lib_file ) ) {
-    #     my $btparselibdir = $self->install_path('usrlib');
-    #     $cbuilder->link(
-    #                     module_name => 'Text::BibTeX',
-    #                     ($^O !~ /darwin/)?
-    #                     (extra_linker_flags => "-Lbtparse/src -Wl,-R${btparselibdir} -lbtparse "):
-    #                     (extra_linker_flags => "-Lbtparse/src -lbtparse "),
-    #                     objects     => $objects,
-    #                     lib_file    => $lib_file,
-    #                    );
-    # }
-#}
-
 sub ACTION_create_yacc {
     my $self = shift;
 
@@ -227,9 +174,7 @@ sub ACTION_create_binaries {
     if (!$self->up_to_date($object, $exe_file)) {
         $libbuilder->link_executable(exe_file => $exe_file,
                                      objects  => [ $object ],
-                                     ($^O !~ /darwin/)?
-                                     (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
-                                     (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
+                                     extra_linker_flags => "-Lsrc -ljspell $extralinkerflags");
     }
 
     $exe_file = catfile("src","jbuild$EXEEXT");
@@ -239,9 +184,7 @@ sub ACTION_create_binaries {
     if (!$self->up_to_date($object, $exe_file)) {
         $libbuilder->link_executable(exe_file => $exe_file,
                                      objects  => [ $object ],
-                                     ($^O !~ /darwin/)?
-                                     (extra_linker_flags => "-Lsrc -Wl,-R${libdir} -ljspell $extralinkerflags"):
-                                     (extra_linker_flags => "-Lsrc -ljspell $extralinkerflags"));
+                                     extra_linker_flags => "-Lsrc -ljspell $extralinkerflags");
     }
 
     for my $file (@toinstall) {
