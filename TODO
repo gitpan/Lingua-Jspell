@@ -1,4 +1,8 @@
 
+
+ - recheck pod2man existence
+
+
  TODO Items for Lingua::Jspell
 ---------------------------------------------------------------------
 
@@ -13,11 +17,6 @@
    than we are doing now) or in a small hand-made dictionary for test
    purposes. Probably the second approach needs more work but might be
    more efficient.
-
- - Although I spent a lot of time making agrep compile without
-   warnings, I would love to get rid of it and use Perl directly. It
-   would not waste time starting a new process and it would make
-   portabiity easier.
 
  - The dictionary installation procedure requires LWP::Simple and
    Archive::Any. Probably these two modules should be made a

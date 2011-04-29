@@ -1,5 +1,9 @@
 Revision history for Lingua-Jspell
 
+1.75 April 29, 2011
+   - Added missing prototype in C library. Fixes a segmentation fault
+     under Snow Leopard
+
 1.74 February 1, 2011
    - Fixed compilation on linux (hopefully)
 

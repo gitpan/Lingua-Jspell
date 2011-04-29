@@ -65,21 +65,17 @@ char * replace_word();
 
 typedef unsigned int ID_TYPE; 
 
-#if 0  /* commented on jslib.c as well (strange) */
+char *word_f_id(ID_TYPE id);
+/* word from id: returns a pointer to the word corresponding to this id */
 
 ID_TYPE word_id(char *word, char *feats, int *status);
 /* this function gives a unique identifier for a given word */
-
-char *word_f_id(ID_TYPE id);
-/* word from id: returns a pointer to the word corresponding to this id */
 
 char *class_f_id(ID_TYPE id);
 /* class from id: returns a pointer to the class corresponding to this id */
 
 char *flags_f_id(ID_TYPE id);
 /* class from id: returns a string with the flags of this word */
-
-#endif
 
 /*---------------------------------------------------------------------*/
 /* Feature processing                                                  */
