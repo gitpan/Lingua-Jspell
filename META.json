@@ -6,7 +6,7 @@
       "Ulisses Pinto"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.113640",
    "license" : [
       "perl_5"
    ],
@@ -48,18 +48,18 @@
    "provides" : {
       "Lingua::Jspell" : {
          "file" : "lib/Lingua/Jspell.pm",
-         "version" : "1.75"
+         "version" : "1.80_01"
       },
       "Lingua::Jspell::DictManager" : {
          "file" : "lib/Lingua/Jspell/DictManager.pm",
          "version" : "0.01"
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "license" : [
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "1.75"
+   "version" : "1.80_01"
 }

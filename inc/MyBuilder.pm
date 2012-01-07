@@ -11,6 +11,8 @@ use ExtUtils::Mkbootstrap;
 use File::Spec::Functions qw.catdir catfile.;
 use File::Path qw.mkpath.;
 
+my $pedantic = $ENV{AMBS_PEDANTIC} || 0;
+
 sub ACTION_pre_install {
     my $self = shift;
 
@@ -145,6 +147,10 @@ sub ACTION_create_objects {
     my $cbuilder = $self->cbuilder;
 
     my $c_files = $self->rscan_dir('src', qr/\.c$/);
+
+    my $extra_compiler_flags = $self->notes('ccurses');
+    $extra_compiler_flags = "-Wall -Werror $extra_compiler_flags" if $pedantic;
+
     for my $file (@$c_files) {
         my $object = $file;
         $object =~ s/\.c/.o/;
@@ -152,7 +158,7 @@ sub ACTION_create_objects {
         $cbuilder->compile(object_file  => $object,
                            source       => $file,
                            include_dirs => ["src"],
-                           extra_compiler_flags => $self->notes('ccurses'));
+                           extra_compiler_flags => $extra_compiler_flags);
     }
 }
 

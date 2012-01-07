@@ -43,8 +43,8 @@ char *advance_beg(char *buf)
     return skiptoword(currentchar);
 }
 
-#if 0
-static char *get_next_word(char *buf, char *next_word)
+// JJ #if 0
+char *get_next_word(char *buf, char *next_word)
 {
     char *word_ini, *word_end, *p;
     int i;
@@ -65,7 +65,7 @@ static char *get_next_word(char *buf, char *next_word)
     else word_end = NULL;
     return word_end;
 }
-#endif
+// #endif
 
 /**
  * @brief ...

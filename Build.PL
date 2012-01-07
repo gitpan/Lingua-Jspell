@@ -4,6 +4,7 @@ use warnings;
 use lib 'inc';
 use File::Spec::Functions qw.catdir catfile.;
 use MyBuilder;
+use File::Copy;
 
 my $version = get_version();
 my $builder = MyBuilder->new
@@ -52,7 +53,22 @@ my $libdir = $builder->install_destination("bin");
 my $pkgconfig = $libdir;
 my $incdir    = $libdir;
 if ($^O =~ /mswin32/i) {
-    $libdir = $ENV{WINDIR} || 'c:\\WINDOWS\\'; ## HACK HACK HACK
+	$libdir = undef;
+    # Find a place where we can write.
+	my @folders = split /;/, $ENV{PATH};
+	my $installed = 0;
+	my $target = "jspell-test.$$";
+	while(@folders && !$installed) {
+		$libdir = shift @folders;	
+		
+		copy("MANIFEST", catfile($libdir,$target));
+		$installed = 1 if -f catfile($libdir, $target);
+	}
+	if (!$installed) {
+		warn("Wasn't able to find a suitable place for libjspell.dll!");
+	} else {
+		print STDERR "libjspell.dll will be installed in $libdir\n";
+	}
     $pkgconfig = undef;
     $incdir    = undef;
 } else {

@@ -257,6 +257,7 @@
 */
 #ifndef MASKBITS
 #define MASKBITS        64
+/* #define MASKBITS        256 */ 
 #endif
 
 /*
