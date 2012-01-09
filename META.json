@@ -48,18 +48,18 @@
    "provides" : {
       "Lingua::Jspell" : {
          "file" : "lib/Lingua/Jspell.pm",
-         "version" : "1.80_01"
+         "version" : "1.80"
       },
       "Lingua::Jspell::DictManager" : {
          "file" : "lib/Lingua/Jspell/DictManager.pm",
          "version" : "0.01"
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "license" : [
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "1.80_01"
+   "version" : "1.80"
 }

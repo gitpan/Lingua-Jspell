@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.80 January 9, 2012
+   - Releasing as stable
+
 1.80_01 January 7, 2012
    - Fixed dll and dictionary installation under Windows 7.
 
