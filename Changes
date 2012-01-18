@@ -1,5 +1,10 @@
 Revision history for Lingua-Jspell
 
+1.81 January 18, 2012
+   - remove warnings on 64 bits machines
+   - expand max suffix length from 16 to 20
+   - remove warnings on non-complete printfs
+
 1.80 January 9, 2012
    - Releasing as stable
 

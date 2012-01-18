@@ -748,7 +748,7 @@ static void treat_good(FILE *ofile) {
 	cab_pipe_resp(strg_out, '*', ctoken,
 		      (int) ((currentchar - contextbufs[0]) - strlen(ctoken)));
 	if (!terse)
-	    fprintf(ofile, strg_out);
+	    fprintf(ofile, "%s", strg_out);
     }
 
     for (i = 0; i < numhits; i++) {
@@ -796,7 +796,7 @@ static void treat_not_good(FILE *ofile) {
 	    if (!islib) {
 		cab_pipe_resp(strg_out, '&', ctoken,
 			      (int) ((currentchar - contextbufs[0]) - strlen(ctoken)));
-		fprintf(ofile, strg_out);
+		fprintf(ofile, "%s", strg_out);
 	    }
 	    for (i = 0;  i < my_poss_count/*MAXPOSSIBLE*/;  i++) {
 		get_info(my_poss[i].suc);
@@ -821,7 +821,7 @@ static void treat_not_good(FILE *ofile) {
 	    cab_pipe_resp(strg_out, '&', ctoken,
 			  (int) ((currentchar - contextbufs[0]) - strlen(ctoken)));
 	    if (!terse) {
-		fprintf(ofile, strg_out);
+		fprintf(ofile, "%s", strg_out);
 		fprintf(ofile, SEP4);
 	    }
 	}
@@ -829,7 +829,7 @@ static void treat_not_good(FILE *ofile) {
     else if (!islib) {
 	cab_pipe_resp(strg_out, '&', ctoken,
 		      (int) ((currentchar - contextbufs[0]) - strlen(ctoken)));
-	fprintf(ofile, strg_out);
+	fprintf(ofile, "%s", strg_out);
 	fprintf(ofile, SEP4);
     }
 }

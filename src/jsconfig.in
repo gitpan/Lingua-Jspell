@@ -217,7 +217,7 @@
 /* largest amount that a word might be extended by adding affixes */
 /* in ispell it was 20 */
 #ifndef MAXAFFIXLEN
-#define MAXAFFIXLEN 16
+#define MAXAFFIXLEN 20
 #endif
 
  /* Max no. of possibilities to generate */

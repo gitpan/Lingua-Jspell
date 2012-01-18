@@ -463,7 +463,7 @@ static void print_expansion(char *croot, ichar_t *tword, char *extra,
    root[i] = '\0';
    sprintf(word, "%s%s", ichartosstr(tword, 1), extra);
    compound_info(strg_out, word, root, root_class, pre_class, suf_class, "");
-   printf(strg_out);
+   printf("%s",strg_out);
 }
 
 /*---------------------------------------------------------------------------*/

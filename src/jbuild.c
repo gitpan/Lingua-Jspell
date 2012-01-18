@@ -169,9 +169,10 @@ static void write_gentable(void)
     }
 }
 
-static int write_suffixs(int *st)
+static int write_suffixs(long int *st)
 {
-    int maxslen, i, n, strptr;
+    int maxslen, i, n;
+    long int strptr;
     struct flagent *fentry;
 
     strptr = *st;
@@ -209,9 +210,10 @@ static int write_suffixs(int *st)
 
 
 
-static int write_prefixs(int *st)
+static int write_prefixs(long int *st)
 {
-    int maxplen, i, n, strptr;
+    long int strptr;
+    int maxplen, i, n;
     struct flagent *fentry;
 
     strptr = *st;
@@ -247,10 +249,11 @@ static int write_prefixs(int *st)
     return maxplen;
 }
 
-static void write_str_type_tables(int maxslen, int maxplen, int *st)
+static void write_str_type_tables(int maxslen, int maxplen, long int *st)
 {
     /* Write out the string character type tables. */
-    int i, n, strptr;
+    int i, n;
+    long int strptr;
 
     strptr = *st;
     hashheader.strtypestart = strptr;
@@ -281,7 +284,7 @@ static void write_str_type_tables(int maxslen, int maxplen, int *st)
 /* Put out the dictionary strings.
  * it writes all the words on disk, and also changes dp->word, in
  * order to make it an index rather than a memory pointer */
-static int put_dict_strings(int strptr)
+static long int put_dict_strings(long int strptr)
 {
     register struct dent *dp;
     int i, n;
@@ -300,7 +303,7 @@ static int put_dict_strings(int strptr)
 }
 
 
-static int put_class_strings(int strptr)
+static long int put_class_strings(long int strptr)
 {
     register struct dent *dp;
     int i, n;
@@ -358,20 +361,20 @@ static int pad_file(int strptr)
 
 static int write_dent(register struct dent *dp)
 {
-    int ind[3];
+    long int ind[3];
     char i, sz = 0;
 
     if (dp->word != (char *) -1) {   /* word exists */
 
-        ind[0] = (int) dp->word;
+        ind[0] = (long int) dp->word;
         i = 1;
         if (dp->jclass != (char *) -1) {
-            ind[(int)i] = (int) dp->jclass;
+            ind[(int)i] = (long int) dp->jclass;
             i++;
         }
 
         if (dp->next != (struct dent *)-1) {
-            ind[(int)i] = (int) dp->next;
+            ind[(int)i] = (long int) dp->next;
             i++;
         }
 
@@ -405,7 +408,7 @@ static int put_hash_table(void)
     aux_w[0] = 0;  aux_w[1] = 1;
     for (i = 0, dp = hashtbl;  i < hashsize;  i++, dp++) {
         if (dp->next != 0) {
-            int  x;
+            long int  x;
             x = dp->next - hashtbl;
             dp->next = (struct dent *)x;
         } else {
@@ -431,7 +434,8 @@ static void put_out_lang_tables(void)
 
 static void output(void)
 {
-    int strptr, thashsize;
+    long int strptr;
+    int thashsize;
     int maxplen, maxslen;
 
     if ((houtfile = fopen(Hfile, "wb")) == NULL) {

@@ -266,15 +266,15 @@ static int act_all_entry(void)
 
    for (i = numsflags + numpflags, entry = sflaglist; --i >= 0; entry++) {
       if (entry->stripl)
-         entry->strip = (ichar_t *) &hashstrings[(int) entry->strip];
+         entry->strip = (ichar_t *) &hashstrings[(long int) entry->strip];
       else
          entry->strip = NULL;
       if (entry->affl)
-         entry->affix = (ichar_t *) &hashstrings[(int) entry->affix];
+         entry->affix = (ichar_t *) &hashstrings[(long int) entry->affix];
       else
          entry->affix = NULL;
       if (entry->classl)
-         entry->jclass = (ichar_t *) &hashstrings[(int) entry->jclass];
+         entry->jclass = (ichar_t *) &hashstrings[(long int) entry->jclass];
       else
          entry->jclass = NULL;
    }

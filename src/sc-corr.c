@@ -145,7 +145,7 @@ void escr_ini(char *strg)
 #ifndef NOCURSES
    move(li - 1, 0);
 #endif
-   printf(strg);
+   printf("%s", strg);
    fflush(stdout);
 }
 
@@ -719,7 +719,7 @@ void jcorrect(char *ctok, ichar_t *itok,
             case 'L' & 037:     leave_options = 0;
                                 break;
 
-            case '?':           givehelp(1);
+            case '?':           givehelp();
                                 leave_options = 0;
                                 break;
 
@@ -778,7 +778,7 @@ char *input(int l, int c, char *st_out, char *st, int max)
 {
 #ifndef NOCURSES
    move(l, c);
-   printf(st_out);
+   printf("%s", st_out);
    return jgetline(l, c+strlen(st_out), st, max);
 #endif
 }
