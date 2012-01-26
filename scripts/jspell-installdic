@@ -3,6 +3,15 @@
 eval 'exec /usr/bin/perl -s -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
+eval 'exec /usr/bin/perl -s -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
+
+eval 'exec /usr/bin/perl -s -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
+
+eval 'exec /usr/bin/perl -s -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
+
 use warnings;
 use strict;
 

@@ -153,7 +153,7 @@ static void act_files_Dfile(void)
 }
 
 
-#define FWRITE(a,b,c,d)    if (fwrite(a,b,c,d)!=c){fprintf(stderr,"Can't write file!\n");exit(1);}
+// #define fwrite(a,b,c,d)    if (fwrite(a,b,c,d)!=c){fprintf(stderr,"Can't write file!\n");exit(1);}
 
 static FILE *houtfile;
 
@@ -165,12 +165,12 @@ static void write_gentable(void)
     aux = strtosichar("", 0);
     for (i = 0; i < MASKBITS; i++) {
         /* printf("gentable[i].classl = %d", gentable[i].classl); */
-        FWRITE((char *) &(gentable[i].classl), 1, sizeof(short), houtfile)
+        fwrite((char *) &(gentable[i].classl), 1, sizeof(short), houtfile);
         if (gentable[i].jclass)
-            FWRITE((char *) gentable[i].jclass, gentable[i].classl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) gentable[i].jclass, gentable[i].classl + 1,
+                   sizeof(ichar_t), houtfile);
         else
-            FWRITE((char *) aux, 1, sizeof(ichar_t), houtfile)
+            fwrite((char *) aux, 1, sizeof(ichar_t), houtfile);
     }
 }
 
@@ -184,22 +184,22 @@ static int write_suffixs(long int *st)
     maxslen = 0;
     for (i = numsflags, fentry = sflaglist;  --i >= 0;  fentry++) {
         if (fentry->stripl) {
-            FWRITE((char *) fentry->strip, fentry->stripl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->strip, fentry->stripl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->strip = (ichar_t *) strptr;
             strptr += (fentry->stripl + 1) * sizeof(ichar_t);
         }
 
         if (fentry->affl) {
-            FWRITE((char *) fentry->affix, fentry->affl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->affix, fentry->affl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->affix = (ichar_t *) strptr;
             strptr += (fentry->affl + 1) * sizeof(ichar_t);
         }
 
         if (fentry->classl) {
-            FWRITE((char *) fentry->jclass, fentry->classl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->jclass, fentry->classl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->jclass = (ichar_t *) strptr;
             strptr += (fentry->classl + 1) * sizeof(ichar_t);
         }
@@ -225,22 +225,22 @@ static int write_prefixs(long int *st)
     maxplen = 0;
     for (i = numpflags, fentry = pflaglist;  --i >= 0;  fentry++) {
         if (fentry->stripl) {
-            FWRITE((char *) fentry->strip, fentry->stripl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->strip, fentry->stripl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->strip = (ichar_t *) strptr;
             strptr += (fentry->stripl + 1) * sizeof(ichar_t);
         }
 
         if (fentry->affl) {
-            FWRITE((char *) fentry->affix, fentry->affl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->affix, fentry->affl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->affix = (ichar_t *) strptr;
             strptr += (fentry->affl + 1) * sizeof(ichar_t);
         }
 
         if (fentry->classl) {
-            FWRITE((char *) fentry->jclass, fentry->classl + 1,
-                   sizeof(ichar_t), houtfile)
+            fwrite((char *) fentry->jclass, fentry->classl + 1,
+                   sizeof(ichar_t), houtfile);
             fentry->jclass = (ichar_t *) strptr;
             strptr += (fentry->classl + 1) * sizeof(ichar_t);
         }
@@ -264,16 +264,16 @@ static void write_str_type_tables(int maxslen, int maxplen, long int *st)
     hashheader.strtypestart = strptr;
     for (i = 0;  i < hashheader.nstrchartype;  i++) {
         n = strlen(chartypes[i].name) + 1;
-        FWRITE(chartypes[i].name, n, 1, houtfile)
+        fwrite(chartypes[i].name, n, 1, houtfile);
         strptr += n;
         n = strlen(chartypes[i].deformatter) + 1;
-        FWRITE(chartypes[i].deformatter, n, 1, houtfile)
+        fwrite(chartypes[i].deformatter, n, 1, houtfile);
         strptr += n;
         for (n = 0;  chartypes[i].suffixes[n] != '\0';
              n += strlen(&chartypes[i].suffixes[n]) + 1)
             ;
         n++;
-        FWRITE(chartypes[i].suffixes, n, 1, houtfile)
+        fwrite(chartypes[i].suffixes, n, 1, houtfile);
         strptr += n;
     }
     hashheader.lstringsize = strptr;
@@ -299,7 +299,7 @@ static long int put_dict_strings(long int strptr)
             dp->word = (char *) -1;
         else {
             n = strlen(dp->word) + 1;
-            FWRITE(dp->word, n, 1, houtfile)
+            fwrite(dp->word, n, 1, houtfile);
             dp->word = (char *) strptr;
             strptr += n;
         }
@@ -318,7 +318,7 @@ static long int put_class_strings(long int strptr)
             dp->jclass = (char *) -1;
         else {
             n = strlen(dp->jclass) + 1;
-            FWRITE(dp->jclass, n, 1, houtfile)
+            fwrite(dp->jclass, n, 1, houtfile);
             dp->jclass = (char *) strptr;
             strptr += n;
         }
@@ -338,7 +338,7 @@ static int put_comm_strings(int strptr)
             dp->comm = (char *) -1;
         else {
             n = strlen(dp->comm) + 1;
-            FWRITE(dp->comm, n, 1, houtfile)
+            fwrite(dp->comm, n, 1, houtfile);
             dp->comm = (char *) strptr;
             strptr += n;
         }
@@ -388,18 +388,18 @@ static int write_dent(register struct dent *dp)
         else 
             aux_w[1] = i;
 
-        FWRITE(aux_w+1, 1, 1, houtfile)  /* write 1 - entry found */
-        FWRITE(ind, sizeof(int), i, houtfile)
-        FWRITE(dp->mask, sizeof(MASKTYPE), MASKSIZE, houtfile)
+        fwrite(aux_w+1, 1, 1, houtfile);  /* write 1 - entry found */
+        fwrite(ind, sizeof(int), i, houtfile);
+        fwrite(dp->mask, sizeof(MASKTYPE), MASKSIZE, houtfile);
         sz = 1 + i * sizeof(int) + sizeof(MASKTYPE) * MASKSIZE;
 #ifdef FULLMASKSET
-        FWRITE(&(dp->flags), 1, 1, houtfile)
+        fwrite(&(dp->flags), 1, 1, houtfile);
         sz++;
 #endif
         return sz;
     }
     else {
-        FWRITE(aux_w, 1, 1, houtfile)  /* write_null - no entry */
+        fwrite(aux_w, 1, 1, houtfile);  /* write_null - no entry */
         return 1;
     }
 }
@@ -429,10 +429,10 @@ static int put_hash_table(void)
 
 static void put_out_lang_tables(void)
 {
-    FWRITE((char *) sflaglist, sizeof(struct flagent), numsflags, houtfile)
+    fwrite((char *) sflaglist, sizeof(struct flagent), numsflags, houtfile);
     hashheader.stblsize = numsflags;
 
-    FWRITE((char *) pflaglist, sizeof(struct flagent), numpflags, houtfile)
+    fwrite((char *) pflaglist, sizeof(struct flagent), numpflags, houtfile);
     hashheader.ptblsize = numpflags;
 }
 
@@ -450,7 +450,7 @@ static void output(void)
     hashheader.stringsize = 0;
     hashheader.lstringsize = 0;
     hashheader.tblsize = hashsize;
-    FWRITE((char *) &hashheader, sizeof hashheader, 1, houtfile)
+    fwrite((char *) &hashheader, sizeof hashheader, 1, houtfile);
     strptr = 0;
 
     /* Put out the strings from the flags table.  This code assumes that the
@@ -480,7 +480,7 @@ static void output(void)
     hashheader.thashsize = thashsize;
 
     rewind(houtfile);
-    FWRITE((char *) &hashheader, sizeof hashheader, 1, houtfile)
+    fwrite((char *) &hashheader, sizeof hashheader, 1, houtfile);
     fclose(houtfile);
 }
 
