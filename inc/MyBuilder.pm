@@ -40,6 +40,7 @@ sub ACTION_pre_install {
 
     ## FIXME - usar o Module::Build para isto?
     for (qw.ujspell jspell-dict jspell-installdic.) {
+        $self->fix_shebang_line( catfile("scripts",$_) );
         $self->copy_if_modified( from   => catfile("scripts",$_),
                                  to_dir => catdir('blib','script'),
                                  flatten => 1 );

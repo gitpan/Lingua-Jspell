@@ -142,7 +142,10 @@ static void init_words(int hashfd)
 
    if (!nodictflag) {
       mem = (char *) calloc(hashheader.thashsize, 1);
-      read(hashfd, mem, hashheader.thashsize);
+      if (read(hashfd, mem, hashheader.thashsize) != hashheader.thashsize) {
+          fprintf(stderr, LOOKUP_C_BAD_FORMAT);
+          exit(1);
+      }
       im = mem;
 
       mask_len = MASKSIZE*sizeof(MASKTYPE);
