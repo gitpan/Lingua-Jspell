@@ -200,12 +200,11 @@ doublecontinue:        ;
 void try_direct_match_in_dic(ichar_t *w, ichar_t *nword,
                              int allhits, int add_poss, int n)
 {
-   register struct dent *dp;
+    register struct dent *dp;
 
-   saw_mode = 1;
-   numhits = 0;
-   do {
-/*      printf("DEB1-numhits=%d, nword =%s\n", numhits, ichartosstr(nword, 1)); */
+    saw_mode = 1;
+    numhits = 0;
+    do {
       if ((dp = lookup(nword, 1)) != NULL) {
          if (numhits < MAX_HITS) {
             hits[numhits].dictent = dp;

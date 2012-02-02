@@ -1,5 +1,8 @@
 Revision history for Lingua-Jspell
 
+1.84 February 2, 2012
+   - new fixes for bugs introduced in 1.81
+
 1.83 January 26, 2012
    - revert bug introduced in 1.81 to jbuild
 

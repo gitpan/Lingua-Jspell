@@ -82,7 +82,7 @@ static int read_hash_header(int hashfd)
    hashsize = read(hashfd, (void*) &hashheader, sizeof(hashheader));
    if (verify_hash() == -1) return -1;
 
-   if (nodictflag) {  /* d'ont remove these {} */
+   if (nodictflag) {  /* don't remove these {} */
       if (creat_empty_table() == -1) return -1;
    }
    else {
@@ -136,7 +136,7 @@ static int read_all_strings(int hashfd)
 static void init_words(int hashfd)
 {
    int i, n, mask_len;
-   int ind[3];
+   long int ind[3];
    register struct dent *dp;
    char n0, *mem, *im;
 
@@ -154,8 +154,8 @@ static void init_words(int hashfd)
          if (n0) {  /* exists entry */
             if (n0 == 4) n = 2;
             else         n = n0;
-            memcpy(ind, im, sizeof(int)*n);
-            im += sizeof(int)*n;
+            memcpy(ind, im, sizeof(long int)*n);
+            im += sizeof(long int)*n;
 
             dp->word = &hashstrings[ind[0]];
 /*            printf("DEB- dp->word = %s\n", dp->word); */
@@ -228,9 +228,9 @@ static int read_info_from_disk()
    int hashfd;
 
 #ifdef __WIN__ 
-   	if ((hashfd = open(hashname, O_RDONLY | O_BINARY)) < 0) {
+   if ((hashfd = open(hashname, O_RDONLY | O_BINARY)) < 0) {
 #else
-	if ((hashfd = open(hashname, O_RDONLY)) < 0) {
+   if ((hashfd = open(hashname, O_RDONLY)) < 0) {
 #endif
       fprintf(stderr, CANT_OPEN, hashname);
       return -1;

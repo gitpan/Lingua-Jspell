@@ -169,7 +169,7 @@ typedef struct hash_info {
 } hash_info;
 
 extern hash_info pers,   /* personal dictionary */
-          repl;   /* replacement "dic", can't be static */
+    repl;   /* replacement "dic", can't be static */
 
 /*
 ** Flags in the directory entry.  If FULLMASKSET is undefined, these are
@@ -327,8 +327,8 @@ struct hashheader
     short maxstringcharlen;                     /* Max strchr len supported */
     short compoundmin;                          /* Min lth of compound parts */
     int stringsize;                             /* Size of string table (all strings: prefixes, sufixes, typetables, words, classes) */
-    int thashsize;      /*NEW*/                 /* Size of hash table (in bytes) */
-    int lstringsize;                            /* Size of lang. str tbl (size of ) */
+    unsigned int thashsize;      /*NEW*/        /* Size of hash table (in bytes) */
+    long int lstringsize;                       /* Size of lang. str tbl (size of ) */
     int tblsize;                                /* No. entries in hash tbl */
     int stblsize;                               /* No. entries in sfx tbl */
     int ptblsize;                               /* No. entries in pfx tbl */

@@ -149,7 +149,7 @@ sub ACTION_create_objects {
 
     my $c_files = $self->rscan_dir('src', qr/\.c$/);
 
-    my $extra_compiler_flags = $self->notes('ccurses');
+    my $extra_compiler_flags = "-g " . $self->notes('ccurses');
     $extra_compiler_flags = "-Wall -Werror $extra_compiler_flags" if $pedantic;
 
     for my $file (@$c_files) {

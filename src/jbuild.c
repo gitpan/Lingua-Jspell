@@ -152,9 +152,6 @@ static void act_files_Dfile(void)
     }
 }
 
-
-// #define fwrite(a,b,c,d)    if (fwrite(a,b,c,d)!=c){fprintf(stderr,"Can't write file!\n");exit(1);}
-
 static FILE *houtfile;
 
 static void write_gentable(void)
@@ -389,9 +386,9 @@ static int write_dent(register struct dent *dp)
             aux_w[1] = i;
 
         fwrite(aux_w+1, 1, 1, houtfile);  /* write 1 - entry found */
-        fwrite(ind, sizeof(int), i, houtfile);
+        fwrite(ind, sizeof(long int), i, houtfile);
         fwrite(dp->mask, sizeof(MASKTYPE), MASKSIZE, houtfile);
-        sz = 1 + i * sizeof(int) + sizeof(MASKTYPE) * MASKSIZE;
+        sz = 1 + i * sizeof(long int) + sizeof(MASKTYPE) * MASKSIZE;
 #ifdef FULLMASKSET
         fwrite(&(dp->flags), 1, 1, houtfile);
         sz++;
@@ -404,10 +401,11 @@ static int write_dent(register struct dent *dp)
     }
 }
 
-static int put_hash_table(void)
+static unsigned int put_hash_table(void)
 {
     register struct dent *dp;
-    int i, thashsize;
+    int i;
+    unsigned int thashsize;
 
     thashsize = 0;
     aux_w[0] = 0;  aux_w[1] = 1;
@@ -440,7 +438,7 @@ static void put_out_lang_tables(void)
 static void output(void)
 {
     long int strptr;
-    int thashsize;
+    unsigned int thashsize;
     int maxplen, maxslen;
 
     if ((houtfile = fopen(Hfile, "wb")) == NULL) {
