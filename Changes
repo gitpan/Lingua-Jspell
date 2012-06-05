@@ -1,5 +1,9 @@
 Revision history for Lingua-Jspell
 
+1.85 June 5, 2012
+   - fix POD files
+   - fix binary installation files
+
 1.84 February 2, 2012
    - new fixes for bugs introduced in 1.81
 

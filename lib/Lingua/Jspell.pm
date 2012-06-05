@@ -31,7 +31,7 @@ Lingua::Jspell - Perl interface to the Jspell morphological analyser.
 
 =cut
 
-our $VERSION = '1.84';
+our $VERSION = '1.85';
 our $JSPELL;
 our $JSPELLLIB;
 our $MODE = { nm => "af", flags => 0 };
@@ -618,7 +618,8 @@ sub _cat2small {
     # Nomes comuns:
     $b{'G'} = 'N' if $b{'G'} eq '_' || $b{'G'} eq '';
     $b{'N'} = 'N' if $b{'N'} eq '_' || $b{'N'} eq '';
-		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
+    $b{'GR'} ||= '' ;
+    $b{'GR'}= 'd' if $b{'GR'} eq 'dim';
     return "\U$b{'CAT'}$b{'G'}$b{'N'}$b{'GR'}";
 
   } elsif ($b{'CAT'} eq 'np') {
@@ -632,7 +633,8 @@ sub _cat2small {
     $b{'G'} = 'N' if $b{'G'} eq '_';
     $b{'G'} = 'N' if $b{'G'} eq '2';
     $b{'N'} = 'N' if $b{'N'} eq '_';
-		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
+    $b{'GR'} ||= '' ;
+	$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
     #    elsif ($b{'N'} eq ''){
     #      $b{'N'} = 'N';
     #    }
@@ -643,7 +645,8 @@ sub _cat2small {
     $b{'G'} = 'N' if $b{'G'} eq '_';
     $b{'G'} = 'N' if $b{'G'} eq '2';
     $b{'N'} = 'N' if $b{'N'} eq '_';
-		$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
+    $b{'GR'} ||= '' ;
+	$b{'GR'} = 'd' if $b{'GR'} eq 'dim';
     #    elsif ($b{'N'} eq ''){
     #      $b{'N'} = 'N';
     #    }
@@ -831,13 +834,14 @@ Given a word, returns a set of analysis. Each analysis is a morphosintatic tag
 
  @l= $pt->featags("lindas") 
    JFS , ...
+ @l= $pt->featags("era",{CAT=>"v"})   ## with a constraint
 
 
 =cut
 
 sub featags{
-  my ($self, $palavra) = @_;
-  return (map {_cat2small(%$_)} ($self->fea($palavra)));
+  my ($self, $palavra,@Ar) = @_;
+  return (map {_cat2small(%$_)} ($self->fea($palavra,@Ar)));
 }
 
 =head2 featagsrad
@@ -847,13 +851,14 @@ and the lemma information
 
  @l= $pt->featagsrad("lindas") 
    JFS:lindo , ...
+ @l= $pt->featagsrad("era",{CAT=>"v"})   ## with a constraint
 
 =cut
 
 sub featagsrad{
-  my ($self, $palavra) = @_;
+  my ($self, $palavra,@Ar) = @_;
 
-  return (map {_cat2small(%$_).":$_->{rad}"} ($self->fea($palavra)));
+  return (map {_cat2small(%$_).":$_->{rad}"} ($self->fea($palavra,@Ar)));
 }
 
 
