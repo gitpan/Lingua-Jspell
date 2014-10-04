@@ -30,6 +30,11 @@ my $builder = MyBuilder->new
                           'ExtUtils::LibBuilder' => '0.01',
                           'Module::Build'      => '0.3603',
                          },
+   meta_merge => {
+        resources  => {
+                       repository => 'https://natura.di.uminho.pt/svn/main/Lingua/Jspell/',
+        },
+    },
    build_requires => {
                       'Config::AutoConf'   => '0.14',
                       'ExtUtils::CBuilder' => '0.27',

@@ -8,6 +8,7 @@ jspell.pc.in
 
 lib/Lingua/Jspell.pm
 lib/Lingua/Jspell/DictManager.pm
+lib/Lingua/Jspell/EAGLES.pm
 
 t/00.load.t
 t/pod-coverage.t
